@@ -10,6 +10,8 @@ public class HealthOnTopOfPlayer : MonoBehaviour
 
     public int health, soul;
 
+    public HealthBar HealthBar;
+
     private void CreateMaskHolder()
     {
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
@@ -110,8 +112,7 @@ public class HealthOnTopOfPlayer : MonoBehaviour
             maskObject.SetActive(true);
         }
     }
-
-
+    
     public void UpdateText(int newhealth, int newsoul)
     {
         health = newhealth;
@@ -128,6 +129,25 @@ public class HealthOnTopOfPlayer : MonoBehaviour
     }
     public void Start()
     {
-        CreateMaskHolder();
+        if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI)
+        {
+            CreateMaskHolder();
+        }
+        else
+        {
+            HealthBar = new HealthBar(HKMP_HealthDisplay.Instance.Layout, Host, "Health bar maybe");
+            HKMP_HealthDisplay.Instance.Gofl.Children.Add(HealthBar);
+            HealthBar.Visibility = Visibility.Visible;
+        }
+    }
+
+    public void Update()
+    {
+        if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI) return;
+        if (HealthBar != null)
+        {
+            HealthBar.SetMasks(health);
+            HealthBar.InvalidateArrange();
+        }
     }
 }

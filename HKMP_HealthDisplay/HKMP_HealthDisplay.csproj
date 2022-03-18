@@ -28,7 +28,7 @@
         <Reference Include="HKMP, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>$(HollowKnightFolder)\Mods\HKMP\HKMP.dll</HintPath>
         </Reference>
-        <Reference Include="MagicUI, Version=1.1.8106.41034, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="MagicUI, Version=1.1.8112.496, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\Mods\Dependancies\MagicUI.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">

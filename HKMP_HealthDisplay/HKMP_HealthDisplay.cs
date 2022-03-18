@@ -8,6 +8,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
 
     public static HKMP_HealthDisplay Instance;
     
+    public GameObjectFollowingLayout Gofl;
+    public LayoutRoot Layout;
     public static GlobalSettings settings { get; set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => settings = s;
     public GlobalSettings OnSaveGlobal() => settings;
@@ -19,6 +21,10 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
         Instance ??= this;
         ClientAddon.RegisterAddon(_clientAddon);
         ServerAddon.RegisterAddon(_serverAddon);
+        
+        
+        Layout = new LayoutRoot(true, "RandomStuff");
+        Gofl = new GameObjectFollowingLayout(Layout, "Some Layout");
         
         ModHooks.HeroUpdateHook += () =>
         {

@@ -7,5 +7,5 @@ public enum HealthDisplayType
 }  
 public class GlobalSettings
 {
-    public HealthDisplayType _healthDisplayType = HealthDisplayType.MaskAndSoulText;
+    public HealthDisplayType _healthDisplayType = HealthDisplayType.MaskUI;
 }
