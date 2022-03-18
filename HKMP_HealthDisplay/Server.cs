@@ -1,10 +1,4 @@
-﻿using System.Drawing.Printing;
-using Hkmp.Api.Server;
-using Hkmp.Networking.Packet;
-using HKMP_HealthDisplay.Settings;
-using ServerPacketId = HKMP_HealthDisplay.Settings.ServerPacketId;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay;
 
 public class HealthDisplayServer : ServerAddon 
 {

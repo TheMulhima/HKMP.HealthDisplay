@@ -1,9 +1,4 @@
-﻿using Hkmp.Api.Client;
-using Hkmp.Api.Server;
-using HKMP_HealthDisplay.Settings;
-using Satchel.BetterMenus;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay;
 
 public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
 {
@@ -16,7 +11,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
     public static GlobalSettings settings { get; set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => settings = s;
     public GlobalSettings OnSaveGlobal() => settings;
-    
+
+    public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
+
     public override void Initialize()
     {
         Instance ??= this;

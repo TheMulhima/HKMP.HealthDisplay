@@ -26,7 +26,7 @@
             <HintPath>$(HollowKnightFolder)\Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="HKMP, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods\HKMP\HKMP.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)\Mods\HKMP\HKMP.dll</HintPath>
         </Reference>
         <Reference Include="MagicUI, Version=1.1.8106.41034, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\Mods\Dependancies\MagicUI.dll</HintPath>

@@ -1,17 +1,7 @@
-﻿using HKMP_HealthDisplay.Settings;
-using MagicUI;
-using TMPro;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay;
 
 public class HealthOnTopOfPlayer : MonoBehaviour
 {
-    //public LayoutRoot layout;
-    //public CanvasLayout canvas;
-    //public StackLayout stack;
-    
     public TextMeshPro HealthTmpro;
     public TextMeshPro SoulTmpro;
     public GameObject Host;

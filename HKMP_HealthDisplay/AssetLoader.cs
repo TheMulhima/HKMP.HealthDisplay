@@ -1,12 +1,4 @@
 ﻿namespace HKMP_HealthDisplay;
-
-public static class Utils
-{
-    public static UnityEngine.Vector2 Cast(this Hkmp.Math.Vector2 vec)
-    {
-        return new Vector2(vec.X, vec.Y);
-    }
-}
 public static class AssetLoader
 {
     public static Sprite Mask;

@@ -1,9 +1,4 @@
-﻿using Hkmp.Api.Client;
-using Hkmp.Networking.Packet;
-using HKMP_HealthDisplay.Settings;
-using ServerPacketId = HKMP_HealthDisplay.Settings.ServerPacketId;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay;
 
 public class HealthDisplayClient : ClientAddon
 {
