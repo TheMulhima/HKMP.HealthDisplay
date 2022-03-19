@@ -1,4 +1,6 @@
-﻿namespace HKMP_HealthDisplay;
+﻿using Logger = Modding.Logger;
+
+namespace HKMP_HealthDisplay;
 
 public class HealthOnTopOfPlayer : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class HealthOnTopOfPlayer : MonoBehaviour
 
     public HealthBar HealthBar;
 
+    #region TextDisplay
     private void CreateMaskHolder()
     {
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
@@ -112,12 +115,9 @@ public class HealthOnTopOfPlayer : MonoBehaviour
             maskObject.SetActive(true);
         }
     }
-    
-    public void UpdateText(int newhealth, int newsoul)
+
+    private void UpdateDisplayText()
     {
-        health = newhealth;
-        soul = newsoul;
-        
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
         {
             SoulTmpro.text = soul.ToString();
@@ -126,6 +126,17 @@ public class HealthOnTopOfPlayer : MonoBehaviour
         {
             HealthTmpro.text = health.ToString();
         }
+    }
+    
+    
+    #endregion
+    
+    public void UpdateText(int newhealth, int newsoul)
+    {
+        health = newhealth;
+        soul = newsoul;
+
+        UpdateDisplayText();
     }
     public void Start()
     {
@@ -146,8 +157,12 @@ public class HealthOnTopOfPlayer : MonoBehaviour
         if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI) return;
         if (HealthBar != null)
         {
+            Logger.Log("Setting Masks");
             HealthBar.SetMasks(health);
-            HealthBar.InvalidateArrange();
+        }
+        else
+        {
+            Logger.Log("Im null i cant set masks stupid");
         }
     }
 }

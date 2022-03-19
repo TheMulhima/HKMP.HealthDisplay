@@ -1,4 +1,6 @@
-﻿namespace HKMP_HealthDisplay;
+﻿using Logger = Modding.Logger;
+
+namespace HKMP_HealthDisplay;
 
 public class HealthBar : Container
     {
@@ -49,12 +51,21 @@ public class HealthBar : Container
                     }
                 }
             }
+            else
+            {
+                Logger.Log("Bruh im null");
+            }
         }
         private void AddMask()
         {
             if (MaskDisplay != null) 
             {
+                Logger.Log("Adding a mask");
                 MaskDisplay.Children.Add(new Image(this.LayoutRoot, AssetLoader.Mask));
+            }
+            else
+            {
+                Logger.Log("What is this im null");
             }
         }
 

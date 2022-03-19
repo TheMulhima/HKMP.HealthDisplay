@@ -28,7 +28,12 @@
                 if (objToFollow != null)
                 {
                     // project the position of the game object into screen space (1920x1080, MagicUI handles additional scaling if needed)
-                    Vector2 childAnchor = objToFollow.transform.position; // todo: actual logic here
+                    Vector2 childAnchor =  Camera.main.WorldToScreenPoint(objToFollow.transform.position);
+                    childAnchor.x /= (float) Screen.width;
+                    childAnchor.y /= (float) Screen.height;
+                
+                    
+                    
                     // offset the position as needed to respect child alignment (i.e. the child will now be aligned to the discovered anchor point)
                     childAnchor.x -= child.HorizontalAlignment switch
                     {

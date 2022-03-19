@@ -32,6 +32,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
             {
                 _clientAddon.SendUpdate(PlayerData.instance.health + PlayerData.instance.healthBlue,
                     PlayerData.instance.MPCharge + PlayerData.instance.MPReserve);
+                Gofl.InvalidateArrange();
             }
         };
     }
