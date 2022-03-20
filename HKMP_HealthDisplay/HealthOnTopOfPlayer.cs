@@ -39,7 +39,7 @@ public class HealthOnTopOfPlayer : MonoBehaviour
 
             var maskObject = Instantiate(empty,
                 healthGameObject.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-            maskObject.transform.localScale = new Vector3(0.15f, 0.15f, maskObject.transform.localScale.z);
+            maskObject.transform.localScale = new Vector3(1, 1, maskObject.transform.localScale.z);// image was manually resized to become 0.15x its size
             maskObject.name = name;
             maskObject.transform.SetParent(healthGameObject.transform);
             maskObject.AddComponent<KeepWorldScalePositive>();
@@ -67,7 +67,7 @@ public class HealthOnTopOfPlayer : MonoBehaviour
 
             var vesselObject = Instantiate(empty,
                 soulGameObject.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-            vesselObject.transform.localScale = new Vector3(0.3f, 0.3f, vesselObject.transform.localScale.z);
+            vesselObject.transform.localScale = new Vector3(1, 1, vesselObject.transform.localScale.z); //image was manually scaled to 0.3 times original size
             vesselObject.name = name;
             vesselObject.transform.SetParent(healthGameObject.transform);
             vesselObject.AddComponent<KeepWorldScalePositive>();
@@ -157,12 +157,7 @@ public class HealthOnTopOfPlayer : MonoBehaviour
         if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI) return;
         if (HealthBar != null)
         {
-            Logger.Log("Setting Masks");
             HealthBar.SetMasks(health);
-        }
-        else
-        {
-            Logger.Log("Im null i cant set masks stupid");
         }
     }
 }

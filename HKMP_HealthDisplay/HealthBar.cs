@@ -11,13 +11,10 @@ public class HealthBar : Container
         public HealthBar(LayoutRoot onLayout, GameObject target, string name = "New Health display") : base(onLayout, name)
         {
             // this could be a DynamicUniformGrid with 9 children before rollover, if you wanted to make masks break onto a new line after 9 masks
-            DynamicUniformGrid maskDisplay = new(onLayout, "HealthDisplay_" + target.name)
+            StackLayout maskDisplay = new(onLayout, "HealthDisplay_" + target.name)
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                ChildrenBeforeRollover = 6,
-                HorizontalSpacing = 2,
-                Padding = new Padding(0, 2),
             };
 
             GameObjectFollowingLayout.ObjectToFollow.Set(this, target);
@@ -51,10 +48,6 @@ public class HealthBar : Container
                     }
                 }
             }
-            else
-            {
-                Logger.Log("Bruh im null");
-            }
         }
         private void AddMask()
         {
@@ -62,10 +55,6 @@ public class HealthBar : Container
             {
                 Logger.Log("Adding a mask");
                 MaskDisplay.Children.Add(new Image(this.LayoutRoot, AssetLoader.Mask));
-            }
-            else
-            {
-                Logger.Log("What is this im null");
             }
         }
 
@@ -77,7 +66,8 @@ public class HealthBar : Container
         protected override Vector2 MeasureOverride()
         {
             // I am exactly as big as my child is (i.e. no additional internal spacing or whatever)
-            return Child?.EffectiveSize ?? Vector2.zero;
+            //return Child?.EffectiveSize ?? Vector2.zero;
+            return Child.Measure();
         }
 
         protected override void ArrangeOverride(Vector2 alignedTopLeftCorner)
