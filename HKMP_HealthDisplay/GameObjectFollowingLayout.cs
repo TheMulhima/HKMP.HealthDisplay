@@ -28,9 +28,6 @@ namespace HKMP_HealthDisplay;
             foreach (ArrangableElement child in Children)
             {
                 GameObject? objToFollow = ObjectToFollow.Get(child);
-                int index = Children.ToList().IndexOf(child);
-                int total = Children.Count;
-                Logger.Log(Children.Count);
                 if (objToFollow != null)
                 {
                     // project the position of the game object into screen space (1920x1080, MagicUI handles additional scaling if needed)
