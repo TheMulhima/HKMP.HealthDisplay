@@ -1,9 +1,9 @@
 ﻿namespace HKMP_HealthDisplay.Settings;
 public enum HealthDisplayType
 {
+    MaskUI,
     MaskAndSoulText,
     MaskText,
-    MaskUI
 }  
 public class GlobalSettings
 {

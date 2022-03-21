@@ -22,6 +22,7 @@ public class HealthBar : Container
             // override the default alignments to new defaults
             this.HorizontalAlignment = HorizontalAlignment.Center;
             this.VerticalAlignment = VerticalAlignment.Bottom;
+            this.Visibility = Visibility.Visible;
 
             // set the child in the layout system
             this.Child = maskDisplay;

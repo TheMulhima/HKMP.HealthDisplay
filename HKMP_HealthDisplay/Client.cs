@@ -9,7 +9,7 @@ public class HealthDisplayClient : ClientAddon
     protected override string Version => "0.0.1";
     public override bool NeedsNetwork => true;
 
-    private static Dictionary<IClientPlayer, HealthOnTopOfPlayer> Cache =
+    internal static Dictionary<IClientPlayer, HealthOnTopOfPlayer> Cache =
         new Dictionary<IClientPlayer, HealthOnTopOfPlayer>();
 
     public override void Initialize(IClientApi clientApi)

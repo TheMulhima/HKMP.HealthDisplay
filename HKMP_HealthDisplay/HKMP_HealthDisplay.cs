@@ -2,7 +2,7 @@
 
 namespace HKMP_HealthDisplay;
 
-public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
+public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMenuMod
 {
     private HealthDisplayClient _clientAddon = new HealthDisplayClient();
     private HealthDisplayServer _serverAddon = new HealthDisplayServer();
@@ -43,4 +43,32 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
             }
         };
     }
+
+    public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
+    {
+        MenuRef ??= new Menu("HKMP_HealthDisplay", new Element[]
+        {
+            new HorizontalOption("Health Display Type",
+                "Choose how health will be displayed. Note: Scene change is required to not cause overlaps", 
+                Enum.GetNames(typeof(HealthDisplayType)),
+                (i) =>
+                {
+                    settings._healthDisplayType = (HealthDisplayType)i;
+                    foreach (var (player, component) in HealthDisplayClient.Cache)
+                    {
+                        //destory all health bars and let the component deal with its consequences
+                        component?.HealthBar?.Destroy();
+                        component?.ClearAllTextUI();
+                    }
+                },
+                () => (int)settings._healthDisplayType),
+            new TextPanel(""),
+            new TextPanel("This mod was made by Mulhima", fontSize: 50),
+            new TextPanel("with help and support from BadMagic", fontSize: 50),
+        });
+        
+        return MenuRef.GetMenuScreen(modListMenu);
+    }
+
+    public bool ToggleButtonInsideMenu { get; }
 }

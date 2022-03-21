@@ -8,122 +8,77 @@ public class HealthOnTopOfPlayer : MonoBehaviour
     public TextMeshPro SoulTmpro;
     public GameObject Host;
 
-    public GameObject empty = new GameObject();
+    public GameObject empty = new();
 
     public int health, soul;
 
     public HealthBar HealthBar;
 
     #region TextDisplay
-    private void CreateMaskHolder()
+    private void CreateMaskAndSoulDisplay()
     {
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
         {
-            var healthGameObject = Instantiate(
-                empty,
-                Host.transform.position + new Vector3(-1f, 2f, 0),
-                Quaternion.identity
-            );
-            healthGameObject.name = "Health Number";
-            healthGameObject.transform.SetParent(Host.transform);
-            healthGameObject.transform.localScale = new Vector3(0.25f, 0.25f, healthGameObject.transform.localScale.z);
-            healthGameObject.AddComponent<KeepWorldScalePositive>();
-
-            // Add a TextMeshPro component to it, so we can render text
-            HealthTmpro = healthGameObject.AddComponent<TextMeshPro>();
-            HealthTmpro.text = "";
-            HealthTmpro.alignment = TextAlignmentOptions.Center;
-            HealthTmpro.fontSize = 22;
-            HealthTmpro.outlineWidth = 0.2f;
-            HealthTmpro.outlineColor = Color.black;
-
-            var maskObject = Instantiate(empty,
-                healthGameObject.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-            maskObject.transform.localScale = new Vector3(1, 1, maskObject.transform.localScale.z);// image was manually resized to become 0.15x its size
-            maskObject.name = name;
-            maskObject.transform.SetParent(healthGameObject.transform);
-            maskObject.AddComponent<KeepWorldScalePositive>();
-
-            var spriteRenderer = maskObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = AssetLoader.Mask;
-
-            var soulGameObject = Instantiate(
-                empty,
-                Host.transform.position + new Vector3(0.5f, 2f, 0),
-                Quaternion.identity
-            );
-            soulGameObject.name = "Soul Number";
-            soulGameObject.transform.SetParent(Host.transform);
-            soulGameObject.transform.localScale = new Vector3(0.25f, 0.25f, soulGameObject.transform.localScale.z);
-            soulGameObject.AddComponent<KeepWorldScalePositive>();
-
-            // Add a TextMeshPro component to it, so we can render text
-            SoulTmpro = soulGameObject.AddComponent<TextMeshPro>();
-            SoulTmpro.text = "";
-            SoulTmpro.alignment = TextAlignmentOptions.Center;
-            SoulTmpro.fontSize = 22;
-            SoulTmpro.outlineWidth = 0.2f;
-            SoulTmpro.outlineColor = Color.black;
-
-            var vesselObject = Instantiate(empty,
-                soulGameObject.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-            vesselObject.transform.localScale = new Vector3(1, 1, vesselObject.transform.localScale.z); //image was manually scaled to 0.3 times original size
-            vesselObject.name = name;
-            vesselObject.transform.SetParent(healthGameObject.transform);
-            vesselObject.AddComponent<KeepWorldScalePositive>();
-
-            var spriteRenderersoul = vesselObject.AddComponent<SpriteRenderer>();
-            spriteRenderersoul.sprite = AssetLoader.Vessel;
-
-
-            healthGameObject.SetActive(true);
-            maskObject.SetActive(true);
-            soulGameObject.SetActive(true);
-            vesselObject.SetActive(true);
+            ClearAllTextUI();
+            HealthTmpro = CreateTextUI("health text", AssetLoader.Mask, -1f);
+            SoulTmpro = CreateTextUI("soul text", AssetLoader.Vessel, 0.5f);
         }
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskText)
         {
-            var healthGameObject = Instantiate(
-                empty,
-                Host.transform.position + new Vector3(-0.5f, 2f, 0),
-                Quaternion.identity
-            );
-            healthGameObject.name = "Health Number";
-            healthGameObject.transform.SetParent(Host.transform);
-            healthGameObject.transform.localScale = new Vector3(0.25f, 0.25f, healthGameObject.transform.localScale.z);
-            healthGameObject.AddComponent<KeepWorldScalePositive>();
-
-            // Add a TextMeshPro component to it, so we can render text
-            HealthTmpro = healthGameObject.AddComponent<TextMeshPro>();
-            HealthTmpro.text = "";
-            HealthTmpro.alignment = TextAlignmentOptions.Center;
-            HealthTmpro.fontSize = 22;
-            HealthTmpro.outlineWidth = 0.2f;
-            HealthTmpro.outlineColor = Color.black;
-
-            var maskObject = Instantiate(empty,
-                healthGameObject.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-            maskObject.transform.localScale = new Vector3(0.15f, 0.15f, maskObject.transform.localScale.z);
-            maskObject.name = name;
-            maskObject.transform.SetParent(healthGameObject.transform);
-            maskObject.AddComponent<KeepWorldScalePositive>();
-
-            var spriteRenderer = maskObject.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = AssetLoader.Mask;
-            
-            healthGameObject.SetActive(true);
-            maskObject.SetActive(true);
+            ClearAllTextUI();
+            HealthTmpro = CreateTextUI("health text", AssetLoader.Mask, -0.5f);
         }
+    }
+
+    private TextMeshPro CreateTextUI(string goname, Sprite sprite, float xpos)
+    {
+        var textGameObject = Instantiate(
+            empty,
+            Host.transform.position + new Vector3(xpos, 2f, 0f),
+            Quaternion.identity
+        );
+        textGameObject.name = goname;
+        textGameObject.transform.SetParent(Host.transform);
+        textGameObject.transform.localScale = new Vector3(0.25f, 0.25f, textGameObject.transform.localScale.z);
+        textGameObject.AddComponent<KeepWorldScalePositive>();
+
+        // Add a TextMeshPro component to it, so we can render text
+        var Tmpro = textGameObject.AddComponent<TextMeshPro>();
+        Tmpro.text = "";
+        Tmpro.alignment = TextAlignmentOptions.Center;
+        Tmpro.fontSize = 22;
+        Tmpro.outlineWidth = 0.2f;
+        Tmpro.outlineColor = Color.black;
+
+        var imageObject = Instantiate(empty,
+            Tmpro.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
+        imageObject.name = goname;
+        imageObject.transform.SetParent(Tmpro.transform);
+        imageObject.AddComponent<KeepWorldScalePositive>();
+
+        var spriteRenderer = imageObject.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = AssetLoader.Mask;
+        
+        textGameObject.SetActive(true);
+        imageObject.SetActive(true);
+
+        return Tmpro;
     }
 
     private void UpdateDisplayText()
     {
         if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
         {
+            if (SoulTmpro == null || HealthTmpro == null)
+            {
+                CreateMaskAndSoulDisplay();
+            }
             SoulTmpro.text = soul.ToString();
+            HealthTmpro.text = health.ToString();
         }
-        if (HKMP_HealthDisplay.settings._healthDisplayType is HealthDisplayType.MaskText or HealthDisplayType.MaskAndSoulText )
+        if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskText)
         {
+            if (HealthTmpro == null) CreateMaskAndSoulDisplay();
             HealthTmpro.text = health.ToString();
         }
     }
@@ -142,41 +97,33 @@ public class HealthOnTopOfPlayer : MonoBehaviour
     {
         if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI)
         {
-            CreateMaskHolder();
+            CreateMaskAndSoulDisplay();
         }
         else
         {
             CreateHealthBar();   
         }
     }
-
-    private void CreateHealthBar()
-    {
-        Logger.Log("Creating HealthBar");
-        HealthBar = new HealthBar(HKMP_HealthDisplay.Instance.Layout, Host, "Health bar maybe")
-        {
-            VerticalAlignment = VerticalAlignment.Bottom
-        };
-        HKMP_HealthDisplay.Instance.Gofl.Children.Add(HealthBar);
-        HealthBar.Visibility = Visibility.Visible;
-    }
-
     public void Update()
     {
-        if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI) return;
+        if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskUI)
+        {
+            HandleHealthBar();
+        }
+    }
+    
+    private void CreateHealthBar()
+    {
+        HealthBar = new HealthBar(HKMP_HealthDisplay.Instance.Layout, Host, "Health bar maybe");
+        HKMP_HealthDisplay.Instance.Gofl.Children.Add(HealthBar);
+    }
+
+
+    private void HandleHealthBar()
+    {
         if (HealthBar != null)
         {
-            //incase of dc or leave scene
-            if (Host == null)
-            {
-                Logger.Log("Host is null");
-                Logger.Log("Destroying healthbar");
-                HealthBar.Destroy();
-            }
-            else
-            {
-                HealthBar.SetMasks(health);
-            }
+            HealthBar?.SetMasks(health);
         }
         else
         {
@@ -189,7 +136,24 @@ public class HealthOnTopOfPlayer : MonoBehaviour
 
     public void OnDestroy()
     {
-        Logger.Log("Ig its time for me to die");
-        HealthBar.Destroy();
+        HealthBar?.Destroy();
+    }
+
+    public void ClearAllTextUI()
+    {
+        if (HealthTmpro != null)
+        {
+            var go = HealthTmpro.gameObject;
+            Destroy(go.GetComponentInChildren<SpriteRenderer>());
+            Destroy(go.GetComponent<TextMeshPro>());
+            Destroy(go);
+        }
+        if (SoulTmpro != null)
+        {
+            var go = SoulTmpro.gameObject;
+            Destroy(go.GetComponentInChildren<SpriteRenderer>());
+            Destroy(go.GetComponent<TextMeshPro>());
+            Destroy(go);
+        }
     }
 }
