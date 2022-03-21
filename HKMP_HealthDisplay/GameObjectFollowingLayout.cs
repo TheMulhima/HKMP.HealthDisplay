@@ -31,21 +31,24 @@ namespace HKMP_HealthDisplay;
                 if (objToFollow != null)
                 {
                     // project the position of the game object into screen space (1920x1080, MagicUI handles additional scaling if needed)
-                    Vector2 childAnchor =  Camera.main.WorldToScreenPoint(objToFollow.transform.position);
+                    Vector2 childAnchor = (Vector2)Camera.main.WorldToScreenPoint(objToFollow.transform.position);
+                    
+                    childAnchor /= this.LayoutRoot.Canvas.GetComponent<Canvas>().scaleFactor;
+                    
+                    //MagicUI considers y down positive but unity considers y up positive
+                    childAnchor.y = UI.Screen.height - childAnchor.y;
                     
                     // offset the position as needed to respect child alignment (i.e. the child will now be aligned to the discovered anchor point)
-                    float effectiveSizex = 34f;
-                    float effectiveSizey = 45f;
                     childAnchor.x -= child.HorizontalAlignment switch
                     {
-                        HorizontalAlignment.Center => effectiveSizex / 2, //child.EffectiveSize.x / 2,
-                        HorizontalAlignment.Right => effectiveSizex,      //child.EffectiveSize.x,
+                        HorizontalAlignment.Center => child.EffectiveSize.x / 2,
+                        HorizontalAlignment.Right => child.EffectiveSize.x,
                         _ => 0
                     };
                     childAnchor.y -= child.VerticalAlignment switch
                     {
-                        VerticalAlignment.Center => effectiveSizey / 2,  //child.EffectiveSize.y / 2,
-                        VerticalAlignment.Bottom => effectiveSizey,      //child.EffectiveSize.y,
+                        VerticalAlignment.Center => child.EffectiveSize.y / 2,
+                        VerticalAlignment.Bottom => child.EffectiveSize.y,
                         _ => 0
                     };
 

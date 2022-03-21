@@ -146,10 +146,19 @@ public class HealthOnTopOfPlayer : MonoBehaviour
         }
         else
         {
-            HealthBar = new HealthBar(HKMP_HealthDisplay.Instance.Layout, Host, "Health bar maybe");
-            HKMP_HealthDisplay.Instance.Gofl.Children.Add(HealthBar);
-            HealthBar.Visibility = Visibility.Visible;
+            CreateHealthBar();   
         }
+    }
+
+    private void CreateHealthBar()
+    {
+        Logger.Log("Creating HealthBar");
+        HealthBar = new HealthBar(HKMP_HealthDisplay.Instance.Layout, Host, "Health bar maybe")
+        {
+            VerticalAlignment = VerticalAlignment.Bottom
+        };
+        HKMP_HealthDisplay.Instance.Gofl.Children.Add(HealthBar);
+        HealthBar.Visibility = Visibility.Visible;
     }
 
     public void Update()
@@ -157,7 +166,30 @@ public class HealthOnTopOfPlayer : MonoBehaviour
         if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI) return;
         if (HealthBar != null)
         {
-            HealthBar.SetMasks(health);
+            //incase of dc or leave scene
+            if (Host == null)
+            {
+                Logger.Log("Host is null");
+                Logger.Log("Destroying healthbar");
+                HealthBar.Destroy();
+            }
+            else
+            {
+                HealthBar.SetMasks(health);
+            }
         }
+        else
+        {
+            if (Host != null)
+            {
+                CreateHealthBar();
+            }
+        }
+    }
+
+    public void OnDestroy()
+    {
+        Logger.Log("Ig its time for me to die");
+        HealthBar.Destroy();
     }
 }

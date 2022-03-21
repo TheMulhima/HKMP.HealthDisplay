@@ -1,4 +1,6 @@
-﻿namespace HKMP_HealthDisplay;
+﻿using GlobalEnums;
+
+namespace HKMP_HealthDisplay;
 
 public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
 {
@@ -21,9 +23,14 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>
         Instance ??= this;
         ClientAddon.RegisterAddon(_clientAddon);
         ServerAddon.RegisterAddon(_serverAddon);
-        
-        
-        Layout = new LayoutRoot(true, "RandomStuff");
+
+
+        Layout = new LayoutRoot(true, "RandomStuff")
+        {
+            VisibilityCondition = () => HeroController.instance != null && !HeroController.instance.cState.transitioning,
+            RenderDebugLayoutBounds = false
+        };
+            
         Gofl = new GameObjectFollowingLayout(Layout, "Some Layout");
         
         ModHooks.HeroUpdateHook += () =>

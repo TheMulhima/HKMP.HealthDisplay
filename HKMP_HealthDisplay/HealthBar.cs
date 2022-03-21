@@ -14,7 +14,7 @@ public class HealthBar : Container
             StackLayout maskDisplay = new(onLayout, "HealthDisplay_" + target.name)
             {
                 Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Center,
+                Padding = new Padding(0,0,5f,120f),
             };
 
             GameObjectFollowingLayout.ObjectToFollow.Set(this, target);
@@ -51,10 +51,14 @@ public class HealthBar : Container
         }
         private void AddMask()
         {
-            if (MaskDisplay != null) 
+            if (MaskDisplay != null)
             {
-                Logger.Log("Adding a mask");
-                MaskDisplay.Children.Add(new Image(this.LayoutRoot, AssetLoader.Mask));
+                //MaskDisplay.Children.Add(new Image(this.LayoutRoot, AssetLoader.Mask));
+                MaskDisplay.Children.Add(
+                    new OverlapMask(this.LayoutRoot, "idk")
+                    {
+                        Child = new Image(this.LayoutRoot, AssetLoader.Mask),
+                    });
             }
         }
 
