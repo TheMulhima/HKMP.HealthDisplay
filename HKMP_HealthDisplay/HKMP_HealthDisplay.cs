@@ -62,8 +62,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
                     foreach (var (_, component) in HealthDisplayClient.HealthBarComponentCache)
                     {
                         //destory all health bars and let the component deal with its consequences
-                        component?.HealthBarUI?.Destroy();
-                        component?.ClearAllTextUI();
+                        if (component == null) continue;
+                        component.HealthBarUI?.Destroy();
+                        component.ClearAllTextUI();
                     }
                 },
                 () => (int)settings._healthDisplayType),

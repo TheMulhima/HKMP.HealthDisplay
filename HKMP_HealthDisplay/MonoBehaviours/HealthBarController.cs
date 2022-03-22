@@ -18,13 +18,15 @@ public class HealthBarController : MonoBehaviour
 
     public void Start()
     {
-        if (HKMP_HealthDisplay.settings._healthDisplayType != HealthDisplayType.MaskUI)
+        switch (HKMP_HealthDisplay.settings._healthDisplayType)
         {
-            CreateMaskAndSoulDisplay();
-        }
-        else
-        {
-            CreateHealthBar();   
+            case HealthDisplayType.MaskUI:
+                CreateHealthBar();
+                break;
+            case HealthDisplayType.MaskText:
+            case HealthDisplayType.MaskAndSoulText:
+                CreateMaskAndSoulDisplay();
+                break;
         }
     }
     
@@ -39,20 +41,18 @@ public class HealthBarController : MonoBehaviour
     
     private void CreateMaskAndSoulDisplay()
     {
-        if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskAndSoulText)
+        ClearAllTextUI();
+        HealthBarUI?.Destroy();
+        
+        switch (HKMP_HealthDisplay.settings._healthDisplayType)
         {
-            ClearAllTextUI();
-            HealthBarUI?.Destroy();
-            
-            HealthText = CreateTextUI("health text", AssetLoader.Mask, -1f);
-            SoulText = CreateTextUI("soul text", AssetLoader.Vessel, 0.5f);
-        }
-        if (HKMP_HealthDisplay.settings._healthDisplayType == HealthDisplayType.MaskText)
-        {
-            ClearAllTextUI();
-            HealthBarUI?.Destroy();
-            
-            HealthText = CreateTextUI("health text", AssetLoader.Mask, -0.5f);
+            case HealthDisplayType.MaskAndSoulText:
+                HealthText = CreateTextUI("health text", AssetLoader.Mask, -1f);
+                SoulText = CreateTextUI("soul text", AssetLoader.Vessel, 0.5f);
+                break;
+            case HealthDisplayType.MaskText:
+                HealthText = CreateTextUI("health text", AssetLoader.Mask, -0.5f);
+                break;
         }
     }
 
@@ -105,6 +105,7 @@ public class HealthBarController : MonoBehaviour
                     CreateMaskAndSoulDisplay();
                 }
 
+                //just incase Host is null
                 if (SoulText != null) SoulText.text = soul.ToString();
                 if (HealthText != null) HealthText.text = health.ToString();
                 break;

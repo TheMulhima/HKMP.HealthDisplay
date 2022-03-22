@@ -4,6 +4,7 @@ public enum HealthDisplayType
     MaskUI,
     MaskAndSoulText,
     MaskText,
+    None,
 }  
 public class GlobalSettings
 {
