@@ -1,7 +1,7 @@
 ﻿using Hkmp.Networking.Packet;
 using Vector2 = Hkmp.Math.Vector2;
 
-namespace HKMP_HealthDisplay.Settings;
+namespace HKMP_HealthDisplay.HKMP;
 
 public class ToClientPacketData : IPacketData
 {
@@ -48,11 +48,11 @@ public class ToServerPacketData : IPacketData
     }
 }
 
-public enum ClientPacketId
+public enum ClientPackets
 {
     SendHealth
 }
-public enum ServerPacketId
+public enum ServerPackets
 {
     SendHealth
 }

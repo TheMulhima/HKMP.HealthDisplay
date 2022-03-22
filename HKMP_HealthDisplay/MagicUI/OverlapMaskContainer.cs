@@ -1,15 +1,12 @@
-﻿using Logger = Modding.Logger;
+﻿namespace HKMP_HealthDisplay.UI;
 
-namespace HKMP_HealthDisplay;
-
-public class OverlapMask : Container
+public class OverlapMaskContainer : Container
     {
-        public OverlapMask(LayoutRoot onLayout, string name = "New Health display") : base(onLayout, name)
+        public OverlapMaskContainer(LayoutRoot onLayout, string name = "New Health display") : base(onLayout, name)
         { }
         protected override Vector2 MeasureOverride()
         {
-            // I am exactly as big as my child is (i.e. no additional internal spacing or whatever)
-            //return Child?.EffectiveSize ?? Vector2.zero;
+            // I am exactly half as big as my child is to cause overlap
             var measure = Child.Measure();
             return new Vector2(measure.x/2, measure.y);
         }

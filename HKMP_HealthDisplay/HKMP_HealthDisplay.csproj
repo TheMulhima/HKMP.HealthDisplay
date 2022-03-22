@@ -3,7 +3,7 @@
         <ProjectGuid>{B66C8E1B-C360-4881-B21F-8C1583AE2398}</ProjectGuid>
         <RootNamespace>HKMP_HealthDisplay</RootNamespace>
         <AssemblyTitle>HKMP_HealthDisplay</AssemblyTitle>
-        <AssemblyVersion>0.0.1.0</AssemblyVersion>
+        <AssemblyVersion>0.0.2.0</AssemblyVersion>
         <Deterministic>true</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <LangVersion>latest</LangVersion>
@@ -25,10 +25,10 @@
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\Assembly-CSharp.dll</HintPath>
         </Reference>
-        <Reference Include="HKMP, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="HKMP">
           <HintPath>$(HollowKnightFolder)\Mods\HKMP\HKMP.dll</HintPath>
         </Reference>
-        <Reference Include="MagicUI, Version=1.1.8112.496, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="MagicUI">
             <HintPath>$(HollowKnightFolder)\Mods\Dependancies\MagicUI.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -97,6 +97,11 @@
         <Reference Include="Satchel, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\Mods\Dependancies\Satchel.dll</HintPath>
         </Reference>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\Readme.md">
+        <Link>Readme.md</Link>
+      </Content>
     </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">

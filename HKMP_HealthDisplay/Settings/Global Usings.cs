@@ -10,6 +10,10 @@ global using MagicUI.Elements;
 global using Hkmp.Api.Client;
 global using Hkmp.Api.Server;
 global using Hkmp.Networking.Packet;
-global using HKMP_HealthDisplay.Settings;
-global using ServerPacketId = HKMP_HealthDisplay.Settings.ServerPacketId;
 global using TMPro;
+global using HKMP_HealthDisplay.Settings;
+global using HKMP_HealthDisplay.UI;
+global using HKMP_HealthDisplay.Utils;
+global using HKMP_HealthDisplay.MonoBehaviours;
+global using HKMP_HealthDisplay.HKMP;
+

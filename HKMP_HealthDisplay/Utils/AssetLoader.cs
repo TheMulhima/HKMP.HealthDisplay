@@ -1,4 +1,4 @@
-﻿namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay.Utils;
 public static class AssetLoader
 {
     public static Sprite Mask;
@@ -31,7 +31,7 @@ public static class AssetLoader
         }
         catch (Exception ex)
         {
-            Modding.Logger.Log("Couldn't load embedded resource: " + ex.Message);
+            HKMP_HealthDisplay.Instance.Log("Couldn't load embedded resource: " + ex.Message);
             throw;
         }
     }

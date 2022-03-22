@@ -1,17 +1,15 @@
-﻿using GlobalEnums;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay;
 
 public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMenuMod
 {
-    private HealthDisplayClient _clientAddon = new HealthDisplayClient();
-    private HealthDisplayServer _serverAddon = new HealthDisplayServer();
-    private Menu MenuRef;
+    private HealthDisplayClient clientAddon = new HealthDisplayClient();
+    private HealthDisplayServer serverAddon = new HealthDisplayServer();
+    private Menu menuRef;
 
     public static HKMP_HealthDisplay Instance;
     
-    public GameObjectFollowingLayout Gofl;
-    public LayoutRoot Layout;
+    public GameObjectFollowingLayout gameObjectFollowingLayout;
+    public LayoutRoot layout;
     public static GlobalSettings settings { get; set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => settings = s;
     public GlobalSettings OnSaveGlobal() => settings;
@@ -21,32 +19,39 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     public override void Initialize()
     {
         Instance ??= this;
-        ClientAddon.RegisterAddon(_clientAddon);
-        ServerAddon.RegisterAddon(_serverAddon);
+        ClientAddon.RegisterAddon(clientAddon);
+        ServerAddon.RegisterAddon(serverAddon);
 
 
-        Layout = new LayoutRoot(true, "RandomStuff")
+        layout = new LayoutRoot(true, "HKMP_HealthDisplay MaskUI")
         {
             VisibilityCondition = () => HeroController.instance != null && !HeroController.instance.cState.transitioning,
             RenderDebugLayoutBounds = false
         };
             
-        Gofl = new GameObjectFollowingLayout(Layout, "Some Layout");
-        
-        ModHooks.HeroUpdateHook += () =>
-        {
-            if (_clientAddon._clientApi is { NetClient.IsConnected: true })
-            {
-                _clientAddon.SendUpdate(PlayerData.instance.health + PlayerData.instance.healthBlue,
-                    PlayerData.instance.MPCharge + PlayerData.instance.MPReserve);
-                Gofl.InvalidateArrange();
-            }
-        };
+        gameObjectFollowingLayout = new GameObjectFollowingLayout(layout, "HKMP Players Follower");
+
+        ModHooks.HeroUpdateHook += BroadcastNewHealth;
+        ModHooks.HeroUpdateHook += UpdateUI;
     }
+    private void BroadcastNewHealth()
+    {
+        if (clientAddon.clientApi is { NetClient.IsConnected: true })
+        {
+            clientAddon.SendUpdate(PlayerData.instance.health + PlayerData.instance.healthBlue,
+                PlayerData.instance.MPCharge + PlayerData.instance.MPReserve);
+        }
+    }
+
+    private void UpdateUI()
+    {
+        gameObjectFollowingLayout.InvalidateArrange();
+    }
+
 
     public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
     {
-        MenuRef ??= new Menu("HKMP_HealthDisplay", new Element[]
+        menuRef ??= new Menu("HKMP_HealthDisplay", new Element[]
         {
             new HorizontalOption("Health Display Type",
                 "Choose how health will be displayed. Note: Scene change is required to not cause overlaps", 
@@ -54,20 +59,23 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
                 (i) =>
                 {
                     settings._healthDisplayType = (HealthDisplayType)i;
-                    foreach (var (player, component) in HealthDisplayClient.Cache)
+                    foreach (var (_, component) in HealthDisplayClient.HealthBarComponentCache)
                     {
                         //destory all health bars and let the component deal with its consequences
-                        component?.HealthBar?.Destroy();
+                        component?.HealthBarUI?.Destroy();
                         component?.ClearAllTextUI();
                     }
                 },
                 () => (int)settings._healthDisplayType),
             new TextPanel(""),
             new TextPanel("This mod was made by Mulhima", fontSize: 50),
-            new TextPanel("with help and support from BadMagic", fontSize: 50),
+            new TextPanel("with help and support from:", fontSize: 50),
+            new TextPanel("BadMagic (Health Bar UI)", fontSize: 50),
+            new TextPanel("Extremelyd1 (HKMP API)", fontSize: 50),
+            new TextPanel("Dandy (help with HKMP API)", fontSize: 50),
         });
         
-        return MenuRef.GetMenuScreen(modListMenu);
+        return menuRef.GetMenuScreen(modListMenu);
     }
 
     public bool ToggleButtonInsideMenu { get; }

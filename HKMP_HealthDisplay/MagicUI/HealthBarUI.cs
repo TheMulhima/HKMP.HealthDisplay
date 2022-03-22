@@ -1,14 +1,12 @@
-﻿using Logger = Modding.Logger;
+﻿namespace HKMP_HealthDisplay.UI;
 
-namespace HKMP_HealthDisplay;
-
-public class HealthBar : Container
+public class HealthBarUI : Container
     {
         // why do it like this? simply put, it reminds you to do null checking and makes stuff less likely to break in edge cases, e.g. accidentally destroying or replacing
         // the child in the lifecycle of this element
         private StackLayout? MaskDisplay => Child as StackLayout;
 
-        public HealthBar(LayoutRoot onLayout, GameObject target, string name = "New Health display") : base(onLayout, name)
+        public HealthBarUI(LayoutRoot onLayout, GameObject target, string name = "New Health display") : base(onLayout, name)
         {
             // this could be a DynamicUniformGrid with 9 children before rollover, if you wanted to make masks break onto a new line after 9 masks
             StackLayout maskDisplay = new(onLayout, "HealthDisplay_" + target.name)
@@ -31,36 +29,32 @@ public class HealthBar : Container
         // or handle adding and removing children in some more sophisticated way e.g. with a property
         public void SetMasks(int newMasks)
         {
-            if (MaskDisplay != null)
+            if (MaskDisplay == null) return;
+            
+            int currentMasks = MaskDisplay.Children.Count;
+            
+            if (newMasks > currentMasks)
             {
-                int currentMasks = MaskDisplay.Children.Count;
-                if (newMasks > currentMasks)
+                for (int i = 0; i < newMasks - currentMasks; i++)
                 {
-                    for (int i = 0; i < newMasks - currentMasks; i++)
-                    {
-                        AddMask();
-                    }
+                    AddMask();
                 }
-                else if (newMasks < currentMasks)
+            }
+            else if (newMasks < currentMasks)
+            {
+                for (int i = 0; i < currentMasks - newMasks; i++)
                 {
-                    for (int i = 0; i < currentMasks - newMasks; i++)
-                    {
-                        RemoveMask();
-                    }
+                    RemoveMask();
                 }
             }
         }
         private void AddMask()
         {
-            if (MaskDisplay != null)
-            {
-                //MaskDisplay.Children.Add(new Image(this.LayoutRoot, AssetLoader.Mask));
-                MaskDisplay.Children.Add(
-                    new OverlapMask(this.LayoutRoot, "idk")
-                    {
-                        Child = new Image(this.LayoutRoot, AssetLoader.Mask),
-                    });
-            }
+            MaskDisplay?.Children.Add(
+                new OverlapMaskContainer(this.LayoutRoot, "idk")
+                {
+                    Child = new Image(this.LayoutRoot, AssetLoader.Mask),
+                });
         }
 
         private void RemoveMask()
@@ -71,7 +65,6 @@ public class HealthBar : Container
         protected override Vector2 MeasureOverride()
         {
             // I am exactly as big as my child is (i.e. no additional internal spacing or whatever)
-            //return Child?.EffectiveSize ?? Vector2.zero;
             return Child.Measure();
         }
 

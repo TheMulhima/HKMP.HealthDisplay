@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using Logger = Modding.Logger;
-
-namespace HKMP_HealthDisplay;
+﻿namespace HKMP_HealthDisplay.UI;
 
     public class GameObjectFollowingLayout : Layout
     {
@@ -20,7 +17,7 @@ namespace HKMP_HealthDisplay;
             {
                 child.Measure();
             }
-            return UI.Screen.size;
+            return MagicUI.Core.UI.Screen.size;
         }
 
         protected override void ArrangeOverride(Vector2 alignedTopLeftCorner)
@@ -33,10 +30,11 @@ namespace HKMP_HealthDisplay;
                     // project the position of the game object into screen space (1920x1080, MagicUI handles additional scaling if needed)
                     Vector2 childAnchor = (Vector2)Camera.main.WorldToScreenPoint(objToFollow.transform.position);
                     
+                    //for people with smaller screens
                     childAnchor /= this.LayoutRoot.Canvas.GetComponent<Canvas>().scaleFactor;
                     
                     //MagicUI considers y down positive but unity considers y up positive
-                    childAnchor.y = UI.Screen.height - childAnchor.y;
+                    childAnchor.y = MagicUI.Core.UI.Screen.height - childAnchor.y;
                     
                     // offset the position as needed to respect child alignment (i.e. the child will now be aligned to the discovered anchor point)
                     childAnchor.x -= child.HorizontalAlignment switch
