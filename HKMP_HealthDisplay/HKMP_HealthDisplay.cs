@@ -33,7 +33,21 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
         ModHooks.HeroUpdateHook += BroadcastNewHealth;
         ModHooks.HeroUpdateHook += UpdateUI;
+        ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
     }
+
+    private string DeleteHealthBars(string arg)
+    {
+        //fail safe if some health bar gets left on screen
+        for (int i = 0; i < gameObjectFollowingLayout.Children.Count; i++)
+        {
+            var healthBar = gameObjectFollowingLayout.Children[i];
+            healthBar?.Destroy();
+            gameObjectFollowingLayout.Children.RemoveAt(i);
+        }
+        return arg;
+    }
+
     private void BroadcastNewHealth()
     {
         if (clientAddon.clientApi is { NetClient.IsConnected: true })
