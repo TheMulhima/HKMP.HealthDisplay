@@ -6,7 +6,7 @@ public class HealthDisplayClient : ClientAddon
     public IClientApi clientApi;
     
     protected override string Name => "Health Display";
-    protected override string Version => "0.0.1";
+    protected override string Version => "0.0.2";
     public override bool NeedsNetwork => true;
 
     internal static Dictionary<IClientPlayer, HealthBarController> HealthBarComponentCache =
@@ -21,7 +21,7 @@ public class HealthDisplayClient : ClientAddon
 
         var netReceiver = _clientApi.NetClient.GetNetworkReceiver<ClientPackets>(clientAddon, InstantiatePacket);
         var netSender = _clientApi.NetClient.GetNetworkSender<ServerPackets>(clientAddon);
-        
+
         netReceiver.RegisterPacketHandler<ToClientPacketData>(
             ClientPackets.SendHealth,
             packetData =>
@@ -47,6 +47,27 @@ public class HealthDisplayClient : ClientAddon
                     }
                 }
             });
+
+
+
+        ModHooks.HeroUpdateHook += () =>
+        {
+
+            if (clientApi is { NetClient.IsConnected: true })
+            {
+                SendUpdate(PlayerData.instance.health + PlayerData.instance.healthBlue,
+                    PlayerData.instance.MPCharge + PlayerData.instance.MPReserve);
+            }
+        };
+
+        clientApi.ClientManager.PlayerDisconnectEvent += (player) =>
+        {
+            if (HealthBarComponentCache.TryGetValue(player, out var healthbar))
+            {
+                UnityEngine.Object.Destroy(healthbar);
+                HealthBarComponentCache.Remove(player);
+            }
+        };
     }
 
     private HealthBarController AddPlayerToCache(IClientPlayer player)

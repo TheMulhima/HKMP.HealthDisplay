@@ -3,7 +3,7 @@
         <ProjectGuid>{B66C8E1B-C360-4881-B21F-8C1583AE2398}</ProjectGuid>
         <RootNamespace>HKMP_HealthDisplay</RootNamespace>
         <AssemblyTitle>HKMP_HealthDisplay</AssemblyTitle>
-        <AssemblyVersion>0.0.2.1</AssemblyVersion>
+        <AssemblyVersion>0.0.3.0</AssemblyVersion>
         <Deterministic>true</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <LangVersion>latest</LangVersion>

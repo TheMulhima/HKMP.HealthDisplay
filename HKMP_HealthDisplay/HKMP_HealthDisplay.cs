@@ -1,4 +1,7 @@
-﻿namespace HKMP_HealthDisplay;
+﻿using System.Collections;
+using Hkmp.Api.Client.Networking;
+
+namespace HKMP_HealthDisplay;
 
 public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMenuMod
 {
@@ -31,11 +34,11 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
             
         gameObjectFollowingLayout = new GameObjectFollowingLayout(layout, "HKMP Players Follower");
 
-        ModHooks.HeroUpdateHook += BroadcastNewHealth;
+        //ModHooks.HeroUpdateHook += BroadcastNewHealth;
         ModHooks.HeroUpdateHook += UpdateUI;
         ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
+        
     }
-
     private string DeleteHealthBars(string arg)
     {
         //fail safe if some health bar gets left on screen
@@ -43,19 +46,19 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         {
             var healthBar = gameObjectFollowingLayout.Children[i];
             healthBar?.Destroy();
-            gameObjectFollowingLayout.Children.RemoveAt(i);
+            gameObjectFollowingLayout.Children.Clear();
         }
         return arg;
     }
 
-    private void BroadcastNewHealth()
+    /*private void BroadcastNewHealth()
     {
         if (clientAddon.clientApi is { NetClient.IsConnected: true })
         {
             clientAddon.SendUpdate(PlayerData.instance.health + PlayerData.instance.healthBlue,
                 PlayerData.instance.MPCharge + PlayerData.instance.MPReserve);
         }
-    }
+    }*/
 
     private void UpdateUI()
     {

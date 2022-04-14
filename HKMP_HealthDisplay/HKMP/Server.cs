@@ -37,6 +37,6 @@ public class HealthDisplayServer : ServerAddon
         }
 
         protected override string Name => "Health Display";
-        protected override string Version => "0.0.1";
+        protected override string Version => "0.0.2";
         public override bool NeedsNetwork => true;
     }

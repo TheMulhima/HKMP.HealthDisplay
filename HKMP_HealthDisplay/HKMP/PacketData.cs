@@ -5,8 +5,8 @@ namespace HKMP_HealthDisplay.HKMP;
 
 public class ToClientPacketData : IPacketData
 {
-    public bool IsReliable => true;
-    public bool DropReliableDataIfNewerExists => true;
+    public bool IsReliable => false;
+    public bool DropReliableDataIfNewerExists => false;
 
     public byte health { get; set; }
     public ushort soul { get; set; }
@@ -29,8 +29,8 @@ public class ToClientPacketData : IPacketData
 
 public class ToServerPacketData : IPacketData
 {
-    public bool IsReliable => true;
-    public bool DropReliableDataIfNewerExists => true;
+    public bool IsReliable => false;
+    public bool DropReliableDataIfNewerExists => false;
 
     public byte health { get; set; }
     public ushort soul { get; set; }
