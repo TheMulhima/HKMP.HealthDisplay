@@ -42,12 +42,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     private string DeleteHealthBars(string arg)
     {
         //fail safe if some health bar gets left on screen
-        for (int i = 0; i < gameObjectFollowingLayout.Children.Count; i++)
-        {
-            var healthBar = gameObjectFollowingLayout.Children[i];
-            healthBar?.Destroy();
-            gameObjectFollowingLayout.Children.Clear();
-        }
+        gameObjectFollowingLayout.Children.Clear();
         return arg;
     }
 
