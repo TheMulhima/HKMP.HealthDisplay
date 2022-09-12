@@ -143,21 +143,36 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     private static string GetHealthAndSoulData() =>
         $"{PlayerData.instance.health + PlayerData.instance.healthBlue}&{PlayerData.instance.MPCharge + PlayerData.instance.MPReserve}";
 
-    private static ushort GetCurrentPlayerID() => Client.Instance.clientApi.ClientManager.Players
-        .First(player => player.Username == Client.Instance.clientApi.ClientManager.Username).Id;
+    private static ushort? GetCurrentPlayerID()
+    {
+        var player = Client.Instance.clientApi.ClientManager.Players
+            .FirstOrDefault(player => player.Username == Client.Instance.clientApi.ClientManager.Username);
+
+        if (player == null) return null;
+        else return player.Id;
+    }
 
     private void SendUpdateToAll()
     {
         if (Client.Instance == null) return;
         
         Log("Sending update to all players in same scene");
-        Log($"{GetCurrentPlayerID()} {GetHealthAndSoulData()}");
-        SendPipe.SendToAll(GetCurrentPlayerID(), "normal send", GetHealthAndSoulData(), true, true);
+
+        var id = GetCurrentPlayerID();
+        
+        if (id == null) return;
+
+        Log($"{id.Value} {GetHealthAndSoulData()}");
+        SendPipe.SendToAll(id.Value, "normal send", GetHealthAndSoulData(), true, true);
     }
 
     private void RequestUpdateFromPlayer(IClientPlayer player)
     {
-        RequestPipe.Send(GetCurrentPlayerID(), player.Id, "request", "");
+        var id = GetCurrentPlayerID();
+        
+        if (id == null) return;
+        
+        RequestPipe.Send(id.Value, player.Id, "request", "");
     }
     
     //fail safe if some health bar gets left on screen
