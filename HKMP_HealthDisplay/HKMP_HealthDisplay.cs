@@ -10,7 +10,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 {
     internal static readonly Dictionary<IClientPlayer, HealthBarController> HealthBarComponentCache = new ();
     
-    private static HkmpPipe HkmpPipe;
+    private static HkmpPipe SendPipe;
+    private static HkmpPipe RequestPipe;
 
     public static HKMP_HealthDisplay Instance;
     
@@ -34,79 +35,111 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
             
         gameObjectFollowingLayout = new GameObjectFollowingLayout(layout, "HKMP Players Follower");
 
-        //ModHooks.HeroUpdateHook += BroadcastNewHealth;
+        SendPipe = new HkmpPipe("HealthDisplaySendPipe", false);
+        RequestPipe = new HkmpPipe("HealthDisplayRequestPipe", false);
+        
+        SendPipe.OnRecieve += OnSendPipeReceive;
+        RequestPipe.OnRecieve += OnRequestReceive;
+        
         ModHooks.HeroUpdateHook += UpdateUI;
         ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
+        ModHooks.SetPlayerIntHook += LookForSetHealth;
+        
+        Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
+        Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
+    }
 
-        HkmpPipe = new HkmpPipe("HealthDisplay", false);
+    private void OnSendPipeReceive(object _, RecievedEventArgs R)
+    {
+        var player = Client.Instance.clientApi.ClientManager.GetPlayer(R.packet.fromPlayer);
 
-        HkmpPipe.OnRecieve += (_, R) =>
+        if (player != null)
         {
-            var player =  Client.Instance.clientApi.ClientManager.GetPlayer(R.packet.fromPlayer);
+            Log($"Received Update from {player.Id} {player.Username} {player.IsInLocalScene}");
+        }
+        else
+        {
+            Log($"{R.packet.fromPlayer} id not found");
+        }
 
-            if (player != null)
+        if (player is { IsInLocalScene: true })
+        {
+            if (HealthBarComponentCache.TryGetValue(player, out var htop))
             {
-                Log($"Recieved Update from {player.Id} {player.Username} {player.IsInLocalScene}");
+                if (htop == null)
+                {
+                    htop = getAddHealthOnTopOfPlayer(player);
+                }
+
+                htop.Host = player.PlayerContainer;
+                string[] data = R.packet.eventData.Split('&');
+                htop.UpdateText(Int32.Parse(data[0]), Int32.Parse(data[1]));
             }
             else
             {
-                Log($"{R.packet.fromPlayer} id not found");
+                htop = AddPlayerToCache(player);
+                htop.Host = player.PlayerContainer;
+                string[] data = R.packet.eventData.Split('&');
+                htop.UpdateText(Int32.Parse(data[0]), Int32.Parse(data[1]));
             }
-            if (player is { IsInLocalScene: true })
-            {
-                if (HealthBarComponentCache.TryGetValue(player, out var htop))
-                {
-                    if (htop == null)
-                    {
-                        htop = getAddHealthOnTopOfPlayer(player);
-                    }
+        }
+    }
+    
+    private void OnRequestReceive(object _, RecievedEventArgs R)
+    {
+        var player = Client.Instance.clientApi.ClientManager.GetPlayer(R.packet.fromPlayer);
 
-                    htop.Host = player.PlayerContainer;
-                    string[] data = R.packet.eventData.Split('&');
-                    htop.UpdateText( Int32.Parse(data[0]), Int32.Parse(data[1]));
-                }
-                else
-                {
-                    htop = AddPlayerToCache(player);
-                    htop.Host = player.PlayerContainer;
-                    string[] data = R.packet.eventData.Split('&');
-                    htop.UpdateText( Int32.Parse(data[0]), Int32.Parse(data[1]));
-                }
-            }
-        };
-        
-        Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += (player) =>
+        if (player != null)
         {
-            if (HealthBarComponentCache.TryGetValue(player, out var healthbar))
-            {
-                UnityEngine.Object.Destroy(healthbar);
-                HealthBarComponentCache.Remove(player);
-            }
-        };
-
-        ModHooks.SetPlayerIntHook += (name, orig) =>
+            Log($"Received Update from {player.Id} {player.Username} {player.IsInLocalScene}");
+        }
+        else
         {
-            if (name == nameof(PlayerData.health))
-            {
-                SendUpdateToAll();
-            }
+            Log($"{R.packet.fromPlayer} id not found");
+        }
 
-            return orig;
-        };
-
+        if (player is { IsInLocalScene: true })
+        {
+            SendUpdateToAll();
+        }
     }
 
-    private static string GetEventData() =>
+    private static void RemovePlayerFromList(IClientPlayer player)
+    {
+        if (HealthBarComponentCache.TryGetValue(player, out var healthBar))
+        {
+            UnityEngine.Object.Destroy(healthBar);
+            HealthBarComponentCache.Remove(player);
+        }
+    }
+
+    private int LookForSetHealth(string name, int orig)
+    {
+        if (name == nameof(PlayerData.health))
+        {
+            SendUpdateToAll();
+        }
+
+        return orig;
+    }
+
+
+    private static string GetHealthAndSoulData() =>
         $"{PlayerData.instance.health + PlayerData.instance.healthBlue}&{PlayerData.instance.MPCharge + PlayerData.instance.MPReserve}";
 
-    private static ushort GetID() => Client.Instance.clientApi.ClientManager.Players
+    private static ushort GetCurrentPlayerID() => Client.Instance.clientApi.ClientManager.Players
         .First(player => player.Username == Client.Instance.clientApi.ClientManager.Username).Id;
 
     private void SendUpdateToAll()
     {
         Log("Sending update to all players in same scene");
-        Log($"{GetID()} {GetEventData()}");
-        HkmpPipe.SendToAll(GetID(), "normal send", GetEventData(), true, true);
+        Log($"{GetCurrentPlayerID()} {GetHealthAndSoulData()}");
+        SendPipe.SendToAll(GetCurrentPlayerID(), "normal send", GetHealthAndSoulData(), true, true);
+    }
+
+    private void RequestUpdateFromPlayer(IClientPlayer player)
+    {
+        RequestPipe.Send(GetCurrentPlayerID(), player.Id, "request", "");
     }
     
     //fail safe if some health bar gets left on screen
