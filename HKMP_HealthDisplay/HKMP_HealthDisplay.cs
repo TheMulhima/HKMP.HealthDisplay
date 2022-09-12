@@ -91,17 +91,14 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
         if (player != null)
         {
-            Log($"Received Update from {player.Id} {player.Username} {player.IsInLocalScene}");
+            Log($"Received Request from {player.Id} {player.Username} {player.IsInLocalScene}");
         }
         else
         {
             Log($"{R.packet.fromPlayer} id not found");
         }
 
-        if (player is { IsInLocalScene: true })
-        {
-            SendUpdateToAll();
-        }
+        SendUpdateToAll();
     }
 
     private static void RemovePlayerFromList(IClientPlayer player)
