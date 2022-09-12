@@ -26,10 +26,13 @@
             <HintPath>$(HollowKnightFolder)\Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="HKMP">
-          <HintPath>$(HollowKnightFolder)\Mods\HKMP\HKMP.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)\\Mods\HKMP\HKMP.dll</HintPath>
+        </Reference>
+        <Reference Include="HkmpPouch">
+          <HintPath>$(HollowKnightFolder)\Mods\HKMPPouch\HkmpPouch.dll</HintPath>
         </Reference>
         <Reference Include="MagicUI">
-            <HintPath>$(HollowKnightFolder)\Mods\Dependancies\MagicUI.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)\Mods\MagicUI\MagicUI.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\MMHOOK_PlayMaker.dll</HintPath>
@@ -45,6 +48,9 @@
         </Reference>
         <Reference Include="PlayMaker, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\PlayMaker.dll</HintPath>
+        </Reference>
+        <Reference Include="Satchel">
+          <HintPath>$(HollowKnightFolder)\\Mods\Satchel\Satchel.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)\UnityEngine.dll</HintPath>
@@ -93,9 +99,6 @@
         </Reference>
         <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
             <HintPath>$(HollowKnightFolder)\mscorlib.dll</HintPath>
-        </Reference>
-        <Reference Include="Satchel, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\Mods\Dependancies\Satchel.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>

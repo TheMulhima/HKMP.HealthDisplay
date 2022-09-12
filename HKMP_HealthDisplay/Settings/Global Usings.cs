@@ -7,13 +7,9 @@ global using Satchel.BetterMenus;
 global using System;
 global using MagicUI.Core;
 global using MagicUI.Elements;
-global using Hkmp.Api.Client;
-global using Hkmp.Api.Server;
-global using Hkmp.Networking.Packet;
 global using TMPro;
 global using HKMP_HealthDisplay.Settings;
 global using HKMP_HealthDisplay.UI;
 global using HKMP_HealthDisplay.Utils;
 global using HKMP_HealthDisplay.MonoBehaviours;
-global using HKMP_HealthDisplay.HKMP;
 
