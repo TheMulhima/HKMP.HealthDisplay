@@ -22,6 +22,14 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     public GlobalSettings OnSaveGlobal() => settings;
 
     public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
+    
+    private static readonly List<string> InterestedPDInts = new()
+    {
+        nameof(PlayerData.health),
+        nameof(PlayerData.healthBlue),
+        nameof(PlayerData.MPCharge),
+        nameof(PlayerData.MPReserve)
+    };
 
     public override void Initialize()
     {
@@ -43,7 +51,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         
         ModHooks.HeroUpdateHook += UpdateUI;
         ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
-        ModHooks.SetPlayerIntHook += LookForSetHealth;
+        ModHooks.SetPlayerIntHook += SendUpdateWhenPDChange;
         
         Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
         Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
@@ -110,9 +118,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         }
     }
 
-    private int LookForSetHealth(string name, int orig)
+    private int SendUpdateWhenPDChange(string name, int orig)
     {
-        if (name == nameof(PlayerData.health))
+        if (InterestedPDInts.Contains(name))
         {
             SendUpdateToAll();
         }
