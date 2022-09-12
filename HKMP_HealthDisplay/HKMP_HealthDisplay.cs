@@ -48,13 +48,22 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         
         SendPipe.OnRecieve += OnSendPipeReceive;
         RequestPipe.OnRecieve += OnRequestReceive;
+
+        On.HeroController.Start += AddPipeEvents;
         
         ModHooks.HeroUpdateHook += UpdateUI;
         ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
         ModHooks.SetPlayerIntHook += SendUpdateWhenPDChange;
-        
+    }
+
+    private void AddPipeEvents(On.HeroController.orig_Start orig, HeroController self)
+    {
         Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
         Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
+
+        On.HeroController.Start -= AddPipeEvents;
+        
+        orig(self);
     }
 
     private void OnSendPipeReceive(object _, RecievedEventArgs R)
@@ -95,6 +104,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     
     private void OnRequestReceive(object _, RecievedEventArgs R)
     {
+        if (Client.Instance == null) return;
+        
         var player = Client.Instance.clientApi.ClientManager.GetPlayer(R.packet.fromPlayer);
 
         if (player != null)
@@ -137,6 +148,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private void SendUpdateToAll()
     {
+        if (Client.Instance == null) return;
+        
         Log("Sending update to all players in same scene");
         Log($"{GetCurrentPlayerID()} {GetHealthAndSoulData()}");
         SendPipe.SendToAll(GetCurrentPlayerID(), "normal send", GetHealthAndSoulData(), true, true);
