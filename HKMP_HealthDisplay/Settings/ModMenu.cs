@@ -7,27 +7,27 @@ public static class ModMenu
     {
         menuRef ??= new Menu("HKMP_HealthDisplay", new Element[]
         {
-            new HorizontalOption("Health Display Type",
-                "Choose how health will be displayed. Note: Scene change is required to not cause overlaps", 
-                Enum.GetNames(typeof(HealthDisplayType)),
+            new HorizontalOption("Is Health Bar Displayed",
+                "Should the HKMP health bar be visible", 
+                new []{"True", "False"},
                 (i) =>
                 {
-                    HKMP_HealthDisplay.settings._healthDisplayType = (HealthDisplayType)i;
-                    foreach (var (_, component) in HKMP_HealthDisplay.HealthBarComponentCache)
+                    HKMP_HealthDisplay.settings.isUIShown = i == 0;
+                    if (!HKMP_HealthDisplay.settings.isUIShown)
                     {
-                        //destory all health bars and let the component deal with its consequences
-                        if (component == null) continue;
-                        component.HealthBarUI?.Destroy();
-                        component.ClearAllTextUI();
+                        foreach (var (_, component) in HKMP_HealthDisplay.HealthBarComponentCache)
+                        {
+                            //destory all health bars and let the component deal with its consequences
+                            if (component == null) continue;
+                            component.HealthBarUI?.Destroy();
+                        }
                     }
                 },
-                () => (int)HKMP_HealthDisplay.settings._healthDisplayType),
+                () => HKMP_HealthDisplay.settings.isUIShown ? 0 : 1),
             new TextPanel(""),
             new TextPanel("This mod was made by Mulhima", fontSize: 50),
             new TextPanel("with help and support from:", fontSize: 50),
-            new TextPanel("BadMagic (Health Bar UI)", fontSize: 50),
-            new TextPanel("Extremelyd1 (HKMP API)", fontSize: 50),
-            new TextPanel("Dandy (help with HKMP API)", fontSize: 50),
+            new TextPanel("BadMagic, Extremelyd1, Dandy and Dwarfwoot", fontSize: 50),
         });
         
         return menuRef.GetMenuScreen(modListMenu);

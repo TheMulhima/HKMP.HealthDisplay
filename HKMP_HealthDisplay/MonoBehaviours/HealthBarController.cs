@@ -1,138 +1,47 @@
 ﻿using JetBrains.Annotations;
 using UnityEngine.Serialization;
-using Logger = Modding.Logger;
 
 namespace HKMP_HealthDisplay.MonoBehaviours;
 
 public class HealthBarController : MonoBehaviour
-{ 
-    [CanBeNull] public TextMeshPro HealthText;
-    [CanBeNull] public TextMeshPro SoulText;
+{
     public GameObject Host;
 
     public GameObject empty = new();
 
-    public int health, soul;
+    public int health;
 
     [CanBeNull] public HealthBarUI HealthBarUI;
 
     public void Start()
     {
-        switch (HKMP_HealthDisplay.settings._healthDisplayType)
+        if (HKMP_HealthDisplay.settings.isUIShown)
         {
-            case HealthDisplayType.MaskUI:
-                CreateHealthBar();
-                break;
-            case HealthDisplayType.MaskText:
-            case HealthDisplayType.MaskAndSoulText:
-                CreateMaskAndSoulDisplay();
-                break;
+            CreateHealthBar();
         }
     }
     
     //to be called from outside
-    public void UpdateText(int newhealth, int newsoul)
+    public void UpdateText(int newhealth)
     {
         health = newhealth;
-        soul = newsoul;
-
         UpdateDisplayText();
-    }
-    
-    private void CreateMaskAndSoulDisplay()
-    {
-        ClearAllTextUI();
-        HealthBarUI?.Destroy();
-        
-        switch (HKMP_HealthDisplay.settings._healthDisplayType)
-        {
-            case HealthDisplayType.MaskAndSoulText:
-                HealthText = CreateTextUI("health text", AssetLoader.Mask, -1f);
-                SoulText = CreateTextUI("soul text", AssetLoader.Vessel, 0.5f);
-                break;
-            case HealthDisplayType.MaskText:
-                HealthText = CreateTextUI("health text", AssetLoader.Mask, -0.5f);
-                break;
-        }
-    }
-
-    [CanBeNull]
-    private TextMeshPro CreateTextUI(string goname, Sprite sprite, float xpos)
-    {
-        if (Host == null) return null;
-        var textGameObject = Instantiate(
-            new GameObject(),
-            Host.transform.position + new Vector3(xpos, 2f, 0f),
-            Quaternion.identity
-        );
-        textGameObject.name = goname;
-        textGameObject.transform.SetParent(Host.transform);
-        textGameObject.transform.localScale = new Vector3(0.25f, 0.25f, textGameObject.transform.localScale.z);
-        textGameObject.AddComponent<KeepWorldScalePositive>();
-
-        // Add a TextMeshPro component to it, so we can render text
-        var Tmpro = textGameObject.AddComponent<TextMeshPro>();
-        Tmpro.text = "";
-        Tmpro.alignment = TextAlignmentOptions.Center;
-        Tmpro.fontSize = 22;
-        Tmpro.outlineWidth = 0.2f;
-        Tmpro.outlineColor = Color.black;
-
-        var imageObject = Instantiate(empty,
-            Tmpro.transform.position + new Vector3(0.8f, 0, 0), Quaternion.identity);
-        imageObject.name = goname;
-        imageObject.transform.SetParent(Tmpro.transform);
-        imageObject.AddComponent<KeepWorldScalePositive>();
-
-        var spriteRenderer = imageObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = sprite;
-        
-        textGameObject.SetActive(true);
-        imageObject.SetActive(true);
-
-        return Tmpro;
     }
 
     private void UpdateDisplayText()
     {
-        switch (HKMP_HealthDisplay.settings._healthDisplayType)
+        if (HKMP_HealthDisplay.settings.isUIShown)
         {
-            case HealthDisplayType.MaskAndSoulText:
+            if (HealthBarUI == null)
             {
-                if (SoulText == null || HealthText == null)
-                {
-                    ClearAllTextUI();
-                    CreateMaskAndSoulDisplay();
-                }
-
-                //just incase Host is null
-                if (SoulText != null) SoulText.text = soul.ToString();
-                if (HealthText != null) HealthText.text = health.ToString();
-                break;
+                CreateHealthBar();
             }
-            case HealthDisplayType.MaskText:
-            {
-                if (HealthText == null)
-                {
-                    ClearAllTextUI();
-                    CreateMaskAndSoulDisplay();
-                }
-
-                if (HealthText != null) HealthText.text = health.ToString();
-                break;
-            }
-            case HealthDisplayType.MaskUI:
-            {
-                if (HealthBarUI == null)
-                {
-                    CreateHealthBar();
-                }
-                else
-                {
-                    HealthBarUI?.SetMasks(health);
-                }
-                break;
-            }
+            
+            HealthBarUI!.SetMasks(health);
+        }
+        else
+        {
+            HealthBarUI?.Destroy();
         }
     }
 
@@ -140,34 +49,17 @@ public class HealthBarController : MonoBehaviour
     {
         if (Host == null)
         {
-            HealthBarUI = null;
+            HealthBarUI?.Destroy();
         }
         else
         {
-            HealthBarUI = new HealthBarUI(HKMP_HealthDisplay.Instance.layout, Host, "Health bar maybe");
-            HKMP_HealthDisplay.Instance.gameObjectFollowingLayout.Children.Add(HealthBarUI);
+            if (HealthBarUI == null)
+            {
+                HealthBarUI = new HealthBarUI(HKMP_HealthDisplay.Instance.layout, Host, "Health bar maybe");
+                HKMP_HealthDisplay.Instance.gameObjectFollowingLayout.Children.Add(HealthBarUI);
+            }
         }
     }
-
-    public void ClearAllTextUI()
-    {
-        if (HealthText != null)
-        {
-            var go = HealthText.gameObject;
-            Destroy(go.GetComponentInChildren<SpriteRenderer>());
-            Destroy(go.GetComponent<TextMeshPro>());
-            Destroy(go);
-        }
-        if (SoulText != null)
-        {
-            var go = SoulText.gameObject;
-            Destroy(go.GetComponentInChildren<SpriteRenderer>());
-            Destroy(go.GetComponent<TextMeshPro>());
-            Destroy(go);
-        }
-    }
-    
-    
     public void OnDestroy()
     {
         //the other goes made here are children so they auto yeet themselves.

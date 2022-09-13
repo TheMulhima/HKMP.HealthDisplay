@@ -22,8 +22,9 @@
 
         protected override void ArrangeOverride(Vector2 alignedTopLeftCorner)
         {
-            foreach (ArrangableElement child in Children)
+            for (int i = 0; i < Children.Count; i++)
             {
+                var child = Children[i];
                 GameObject? objToFollow = ObjectToFollow.Get(child);
                 if (objToFollow != null)
                 {
@@ -51,6 +52,11 @@
                     };
 
                     child.Arrange(new Rect(childAnchor, child.EffectiveSize));
+                }
+                else
+                {
+                    Children[i].Destroy();
+                    Children.RemoveAt(i);
                 }
             }
         }

@@ -30,7 +30,7 @@ public class HealthBarUI : Container
         public void SetMasks(int newMasks)
         {
             if (MaskDisplay == null) return;
-            
+
             int currentMasks = MaskDisplay.Children.Count;
             
             if (newMasks > currentMasks)
