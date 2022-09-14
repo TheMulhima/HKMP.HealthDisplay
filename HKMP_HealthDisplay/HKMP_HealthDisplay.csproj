@@ -14,7 +14,7 @@
         <OutputDirectory>$(HollowKnightFolder)/Mods/HKMPAddon</OutputDirectory>
         <OutputDirectory2>$(HollowKnightFolder2)/Mods/HKMPAddon</OutputDirectory2>-->
         <HollowKnightFolder>..\HKManaged\</HollowKnightFolder>
-        <ExportDir>bin\Publish</ExportDir>
+        <OutputDirectory>$(SolutionDir)</OutputDirectory>
 
 
     </PropertyGroup>
