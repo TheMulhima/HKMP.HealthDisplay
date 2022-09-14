@@ -1,4 +1,4 @@
 HKMP
-HkmpPouch
+HkmpPouch as HKMPPouch
 Satchel
 MagicUI
