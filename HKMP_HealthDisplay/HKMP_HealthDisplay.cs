@@ -73,12 +73,23 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
             {
                 if (!HealthBarComponentCache.ContainsKey(player))
                 {
-                    Log($"requesting from player {player.Id}");
-                    RequestUpdateFromPlayer(player);
+                    timer += Time.deltaTime;
+                    if (timer > 0.5f)
+                    {
+                        timer = 0f;
+                        RequestUpdateFromPlayer(player);
+                    }
+                }
+                else
+                {
+                    //remove the timer value because we got the data requested
+                    timer = 0f;
                 }
             }
         }
     }
+
+    private float timer = 0f;
 
     private void AddPipeEvents(On.HeroController.orig_Start orig, HeroController self)
     {
