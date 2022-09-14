@@ -24,86 +24,86 @@
         <EmbeddedResource Include="Images\Mask.png" />
         <EmbeddedResource Include="Images\Vessel.png" />
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\Assembly-CSharp.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="HKMP">
-          <HintPath>$(HollowKnightFolder)\\Mods\HKMP\HKMP.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)/Mods/HKMP/HKMP.dll</HintPath>
         </Reference>
         <Reference Include="HkmpPouch">
-          <HintPath>$(HollowKnightFolder)\Mods\HKMPPouch\HkmpPouch.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)/Mods/HKMPPouch/HkmpPouch.dll</HintPath>
         </Reference>
         <Reference Include="MagicUI">
-          <HintPath>$(HollowKnightFolder)\Mods\MagicUI\MagicUI.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)/Mods/MagicUI/MagicUI.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\MMHOOK_PlayMaker.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/MMHOOK_PlayMaker.dll</HintPath>
         </Reference>
         <Reference Include="Mono.Cecil, Version=0.11.3.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-            <HintPath>$(HollowKnightFolder)\Mono.Cecil.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/Mono.Cecil.dll</HintPath>
         </Reference>
         <Reference Include="MonoMod.RuntimeDetour, Version=21.4.29.1, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\MonoMod.RuntimeDetour.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/MonoMod.RuntimeDetour.dll</HintPath>
         </Reference>
         <Reference Include="MonoMod.Utils, Version=21.4.29.1, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\MonoMod.Utils.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/MonoMod.Utils.dll</HintPath>
         </Reference>
         <Reference Include="PlayMaker, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\PlayMaker.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/PlayMaker.dll</HintPath>
         </Reference>
         <Reference Include="Satchel">
-          <HintPath>$(HollowKnightFolder)\\Mods\Satchel\Satchel.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)/Mods/Satchel/Satchel.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.AudioModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.AudioModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.CoreModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.ImageConversionModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.ImageConversionModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.IMGUIModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.IMGUIModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.JSONSerializeModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.JSONSerializeModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.JSONSerializeModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.ParticleSystemModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.ParticleSystemModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.Physics2DModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.Physics2DModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.TextRenderingModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.TextRenderingModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.UI.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.UI.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.UIModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.UIModule.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\MMHOOK_Assembly-CSharp.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
         <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\Newtonsoft.Json.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>$(HollowKnightFolder)\UnityEngine.InputLegacyModule.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/UnityEngine.InputLegacyModule.dll</HintPath>
         </Reference>
         <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-            <HintPath>$(HollowKnightFolder)\netstandard.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/netstandard.dll</HintPath>
         </Reference>
         <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-            <HintPath>$(HollowKnightFolder)\mscorlib.dll</HintPath>
+            <HintPath>$(HollowKnightFolder)/mscorlib.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\Readme.md">
+      <Content Include="../Readme.md">
         <Link>Readme.md</Link>
       </Content>
     </ItemGroup>
