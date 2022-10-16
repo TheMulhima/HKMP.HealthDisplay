@@ -2,6 +2,7 @@
 using Hkmp.Api.Client;
 using HkmpPouch;
 using JetBrains.Annotations;
+using HKMirror;
 
 namespace HKMP_HealthDisplay;
 
@@ -152,7 +153,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private int SendUpdateWhenPDChange(string name, int orig)
     {
-        if (new [] {nameof(PlayerData.health), nameof(PlayerData.healthBlue)}.Contains(name))
+        if (new [] {nameof(PlayerDataAccess.health), nameof(PlayerDataAccess.healthBlue)}.Contains(name))
         {
             SendUpdateToAll(name, orig);
         }
@@ -163,8 +164,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     private static string GetEventData(string UpdatedPDName, int newPDValue)
     {
         //we are sometimes getting this data before the pd is set, we have the new value so we should use it
-        var health = UpdatedPDName == nameof(PlayerData.health) ? newPDValue : PlayerData.instance.health;
-        var healthBlue = UpdatedPDName == nameof(PlayerData.healthBlue) ? newPDValue : PlayerData.instance.healthBlue;
+        var health = UpdatedPDName == nameof(PlayerDataAccess.health) ? newPDValue : PlayerDataAccess.health;
+        var healthBlue = UpdatedPDName == nameof(PlayerDataAccess.healthBlue) ? newPDValue : PlayerDataAccess.healthBlue;
         
         return $"{Client.Instance.clientApi.ClientManager.Username}{Data_Seperator}{health + healthBlue}";
     }
