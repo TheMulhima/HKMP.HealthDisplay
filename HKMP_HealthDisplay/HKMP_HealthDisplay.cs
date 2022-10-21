@@ -3,6 +3,7 @@ using Hkmp.Api.Client;
 using HkmpPouch;
 using JetBrains.Annotations;
 using HKMirror;
+using HKMirror.Hooks.OnHooks;
 
 namespace HKMP_HealthDisplay;
 
@@ -47,8 +48,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         RequestPipe.OnRecieve += OnRequestReceive;
 
         //it fails in init idk
-        On.HeroController.Start += AddPipeEvents;
-        
+        OnHeroController.BeforeOrig.Start += AddPipeEvents;
+
         //request for missing data
         ModHooks.HeroUpdateHook += RequestForData;
         
@@ -92,16 +93,14 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private float timer = 0f;
 
-    private void AddPipeEvents(On.HeroController.orig_Start orig, HeroController self)
+    private void AddPipeEvents(OnHeroController.Delegates.Params_Start args)
     {
         Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
         Client.Instance.clientApi.ClientManager.PlayerConnectEvent += RequestUpdateFromPlayer;
         Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
 
         //unhook this. we only want it running once
-        On.HeroController.Start -= AddPipeEvents;
-        
-        orig(self);
+        OnHeroController.BeforeOrig.Start -= AddPipeEvents;
     }
 
     private void OnSendPipeReceive(object _, RecievedEventArgs R)
