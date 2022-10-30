@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using Hkmp.Api.Client;
 using HkmpPouch;
 using JetBrains.Annotations;
@@ -13,7 +14,6 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     internal static readonly Dictionary<IClientPlayer, HealthBarController> HealthBarComponentCache = new ();
     
     private static HkmpPipe SendPipe;
-    private static HkmpPipe RequestPipe;
 
     //i hope no one names themselves like this 
     private const string Data_Seperator = "&*&*&()(())";
@@ -22,11 +22,16 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     
     public GameObjectFollowingLayout gameObjectFollowingLayout;
     public LayoutRoot layout;
+
+    public NonBouncer CoroutineHolder;
+    //username, Coroutine
+    public Dictionary<string, Coroutine> StopShowingHealthBarTimers = new Dictionary<string, Coroutine>();
+
     public static GlobalSettings settings { get; private set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => settings = s;
     public GlobalSettings OnSaveGlobal() => settings;
 
-    public override string GetVersion() => AssemblyUtils.GetAssemblyVersionHash();
+    public override string GetVersion() => "v0.5.2 - Temp Display";
 
     public override void Initialize()
     {
@@ -40,18 +45,16 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
             
         gameObjectFollowingLayout = new GameObjectFollowingLayout(layout, "HKMP Players Follower");
 
+        CoroutineHolder = new GameObject("HKMP Health Display Coroutine Holder").GetAddComponent<NonBouncer>();
+        UnityEngine.Object.DontDestroyOnLoad(CoroutineHolder.gameObject);
+
         //create 2 pipes for sending and requesting health
         SendPipe = new HkmpPipe("HealthDisplaySendPipe", false);
-        RequestPipe = new HkmpPipe("HealthDisplayRequestPipe", false);
         
         SendPipe.OnRecieve += OnSendPipeReceive;
-        RequestPipe.OnRecieve += OnRequestReceive;
 
         //it fails in init idk
         OnHeroController.BeforeOrig.Start += AddPipeEvents;
-
-        //request for missing data
-        ModHooks.HeroUpdateHook += RequestForData;
         
         //update the UI to follow the players
         ModHooks.HeroUpdateHook += UpdateUI;
@@ -64,39 +67,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     }
 
-    private void RequestForData()
-    {
-        if (Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
-
-        foreach (var player in Client.Instance.clientApi.ClientManager.Players)
-        {
-            if (player is { IsInLocalScene: true })
-            {
-                if (!HealthBarComponentCache.ContainsKey(player))
-                {
-                    timer += Time.deltaTime;
-                    if (timer > 0.5f)
-                    {
-                        timer = 0f;
-                        RequestUpdateFromPlayer(player);
-                    }
-                }
-                else
-                {
-                    //remove the timer value because we got the data requested
-                    timer = 0f;
-                }
-            }
-        }
-    }
-
-    private float timer = 0f;
-
     private void AddPipeEvents(OnHeroController.Delegates.Params_Start args)
     {
-        Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
-        Client.Instance.clientApi.ClientManager.PlayerConnectEvent += RequestUpdateFromPlayer;
         Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
 
         //unhook this. we only want it running once
@@ -130,16 +102,25 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
             
             htop.Host = player.PlayerContainer;
             htop.UpdateText(int.Parse(senderHealth));
+
+            if (StopShowingHealthBarTimers.TryGetValue(player.Username, out var enumerator))
+            {
+                if (enumerator != null)
+                {
+                    CoroutineHolder.StopCoroutine(enumerator);
+                }
+            }
+
+            StopShowingHealthBarTimers[player.Username] = CoroutineHolder.StartCoroutine(RemoveHealthBarOnDueTime(player, 5f));
         }
     }
-    
-    private void OnRequestReceive(object _, RecievedEventArgs R)
-    {
-        if (Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
 
-        SendUpdateToAll(bypass:true);
+    private IEnumerator RemoveHealthBarOnDueTime(IClientPlayer player, float time)
+    {
+        yield return new WaitForSeconds(time);
+        RemovePlayerFromList(player);
     }
+    
 
     private static void RemovePlayerFromList(IClientPlayer player)
     {
@@ -168,34 +149,17 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         
         return $"{Client.Instance.clientApi.ClientManager.Username}{Data_Seperator}{health + healthBlue}";
     }
-
-    private static string previousData = string.Empty;
-    private void SendUpdateToAll(bool bypass = false) => SendUpdateToAll(string.Empty, 0, bypass);
-    private void SendUpdateToAll(string name, int orig, bool bypass = false)
+    
+    private void SendUpdateToAll(string name, int orig)
     {
         if (Client.Instance == null) return;
         if (!Client.Instance.clientApi.NetClient.IsConnected) return;
         
         var data = GetEventData(name, orig);
 
-        if (!bypass)
-        {
-            if (previousData == data)
-            {
-                return;
-            }
-        }
-
-        previousData = data;
-
         SendPipe.SendToAll(0, "normal send", data, true, true);
     }
-    
-    private void RequestUpdateFromPlayer(IClientPlayer player)
-    {
-        RequestPipe.Send(0, player.Id, "request", "");
-    }
-    
+
     //fail safe if some health bar gets left on screen
     private string DeleteHealthBars(string arg)
     {
