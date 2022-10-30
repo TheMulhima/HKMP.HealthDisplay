@@ -10,11 +10,10 @@
         <TargetFramework>net472</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>CS1591</NoWarn>
-        <!--<HollowKnightFolder>C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed</HollowKnightFolder>
-        <OutputDirectory>$(HollowKnightFolder)/Mods/HKMPAddon</OutputDirectory>
-        <OutputDirectory2>$(HollowKnightFolder2)/Mods/HKMPAddon</OutputDirectory2>-->
-        <HollowKnightFolder>../HKManaged</HollowKnightFolder>
-        <OutputDirectory>$(SolutionDir)</OutputDirectory>
+        <HollowKnightFolder Condition="$([MSBuild]::IsOSPlatform('Windows'))">C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed</HollowKnightFolder>
+        <OutputDirectory Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(HollowKnightFolder)/Mods</OutputDirectory>
+        <HollowKnightFolder Condition="$([MSBuild]::IsOSPlatform('Linux'))">../HKManaged</HollowKnightFolder>
+        <OutputDirectory Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(SolutionDir)</OutputDirectory>
 
 
     </PropertyGroup>
@@ -30,7 +29,7 @@
           <HintPath>$(HollowKnightFolder)/Mods/HKMP/HKMP.dll</HintPath>
         </Reference>
         <Reference Include="HkmpPouch">
-          <HintPath>$(HollowKnightFolder)/Mods/HKMPPouch/HkmpPouch.dll</HintPath>
+          <HintPath>$(HollowKnightFolder)/Mods/HkmpPouch/HkmpPouch.dll</HintPath>
         </Reference>
         <Reference Include="MagicUI">
           <HintPath>$(HollowKnightFolder)/Mods/MagicUI/MagicUI.dll</HintPath>
