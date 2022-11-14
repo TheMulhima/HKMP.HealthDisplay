@@ -19,9 +19,6 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     private const string Data_Seperator = "&*&*&()(())";
 
     public static HKMP_HealthDisplay Instance;
-    
-    public GameObjectFollowingLayout gameObjectFollowingLayout;
-    public LayoutRoot layout;
     public static GlobalSettings settings { get; private set; } = new ();
     public void OnLoadGlobal(GlobalSettings s) => settings = s;
     public GlobalSettings OnSaveGlobal() => settings;
@@ -31,14 +28,6 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
     public override void Initialize()
     {
         Instance ??= this;
-        
-        layout = new LayoutRoot(true, "HKMP_HealthDisplay MaskUI")
-        {
-            VisibilityCondition = () => HeroController.instance != null && !HeroController.instance.cState.transitioning,
-            RenderDebugLayoutBounds = false
-        };
-            
-        gameObjectFollowingLayout = new GameObjectFollowingLayout(layout, "HKMP Players Follower");
 
         //create 2 pipes for sending and requesting health
         SendPipe = new HkmpPipe("HealthDisplaySendPipe", false);
@@ -52,15 +41,18 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
         //request for missing data
         ModHooks.HeroUpdateHook += RequestForData;
-        
-        //update the UI to follow the players
-        ModHooks.HeroUpdateHook += UpdateUI;
+
+        ModHooks.HeroUpdateHook += () =>
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                var c = HeroController.instance.gameObject.GetAddComponent<HealthBarController>();
+                c.UpdateText(PlayerDataAccess.health, PlayerDataAccess.maxHealth, PlayerDataAccess.healthBlue);
+            }
+        };
         
         //send update when health changes
         ModHooks.SetPlayerIntHook += SendUpdateWhenPDChange;
-        
-        //delete healthbars when going to new scene
-        ModHooks.BeforeSceneLoadHook += DeleteHealthBars;
 
     }
 
@@ -76,7 +68,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
                 if (!HealthBarComponentCache.ContainsKey(player))
                 {
                     timer += Time.deltaTime;
-                    if (timer > 0.5f)
+                    if (timer > 0.3f)
                     {
                         timer = 0f;
                         RequestUpdateFromPlayer(player);
@@ -108,7 +100,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         var data = R.packet.eventData.Split(new[] { Data_Seperator }, StringSplitOptions.None);
         
         var senderUsername = data[0];
-        var senderHealth = data[1];
+        var senderHealthMain = data[1];
+        var senderHealthMax = data[2];
+        var senderHealthBlue = data[3];
      
         if(Client.Instance == null) return;
         if (!Client.Instance.clientApi.NetClient.IsConnected) return;
@@ -128,8 +122,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
                 htop = AddPlayerToCache(player);
             }
             
-            htop.Host = player.PlayerContainer;
-            htop.UpdateText(int.Parse(senderHealth));
+            htop.UpdateText(int.Parse(senderHealthMain), int.Parse(senderHealthMax), int.Parse(senderHealthBlue));
         }
     }
     
@@ -152,7 +145,7 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private int SendUpdateWhenPDChange(string name, int orig)
     {
-        if (new [] {nameof(PlayerDataAccess.health), nameof(PlayerDataAccess.healthBlue)}.Contains(name))
+        if (new [] {nameof(PlayerDataAccess.health), nameof(PlayerDataAccess.healthBlue), nameof(PlayerDataAccess.maxHealth)}.Contains(name))
         {
             SendUpdateToAll(name, orig);
         }
@@ -165,8 +158,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         //we are sometimes getting this data before the pd is set, we have the new value so we should use it
         var health = UpdatedPDName == nameof(PlayerDataAccess.health) ? newPDValue : PlayerDataAccess.health;
         var healthBlue = UpdatedPDName == nameof(PlayerDataAccess.healthBlue) ? newPDValue : PlayerDataAccess.healthBlue;
+        var healthMax = UpdatedPDName == nameof(PlayerDataAccess.maxHealth) ? newPDValue : PlayerDataAccess.maxHealth;
         
-        return $"{Client.Instance.clientApi.ClientManager.Username}{Data_Seperator}{health + healthBlue}";
+        return $"{Client.Instance.clientApi.ClientManager.Username}{Data_Seperator}{health}{Data_Seperator}{healthMax}{Data_Seperator}{healthBlue}";
     }
 
     private static string previousData = string.Empty;
@@ -191,25 +185,9 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         SendPipe.SendToAll(0, "normal send", data, true, true);
     }
     
-    private void RequestUpdateFromPlayer(IClientPlayer player)
+    public void RequestUpdateFromPlayer(IClientPlayer player)
     {
         RequestPipe.Send(0, player.Id, "request", "");
-    }
-    
-    //fail safe if some health bar gets left on screen
-    private string DeleteHealthBars(string arg)
-    {
-        for (int i = 0; i < gameObjectFollowingLayout.Children.Count; i++)
-        {
-            gameObjectFollowingLayout.Children[i].Destroy();
-        }
-        gameObjectFollowingLayout.Children.Clear();
-        return arg;
-    }
-
-    private void UpdateUI()
-    {
-        gameObjectFollowingLayout.InvalidateArrange();
     }
 
     private HealthBarController AddPlayerToCache(IClientPlayer player)
@@ -226,7 +204,6 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         if (player.PlayerContainer.GetComponent<HealthBarController>() == null)
         {
             htop = player.PlayerContainer.AddComponent<HealthBarController>();
-            htop.Host = player.PlayerContainer;
         }
         else
         {

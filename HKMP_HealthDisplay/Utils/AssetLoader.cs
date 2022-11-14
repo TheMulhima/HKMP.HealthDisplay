@@ -2,12 +2,16 @@
 public static class AssetLoader
 {
     public static Sprite Mask;
-    public static Sprite Vessel;
+    public static Sprite MaskBlue;
+    public static Sprite MaskEmpty;
+    public static Sprite Plus;
 
     static AssetLoader()
     {
-        Mask = CreateSprite("Mask.png");
-        Vessel = CreateSprite("Vessel.png");
+        Mask = CreateSprite($"{nameof(Mask)}.png");
+        MaskBlue = CreateSprite($"{nameof(MaskBlue)}.png");
+        MaskEmpty = CreateSprite($"{nameof(MaskEmpty)}.png");
+        Plus = CreateSprite($"{nameof(Plus)}.png");
     }
     
     private static Sprite CreateSprite(string assetPath)

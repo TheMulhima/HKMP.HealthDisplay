@@ -1,69 +1,133 @@
-﻿using JetBrains.Annotations;
+﻿using HutongGames.PlayMaker.Actions;
+using JetBrains.Annotations;
 using UnityEngine.Serialization;
 
 namespace HKMP_HealthDisplay.MonoBehaviours;
 
 public class HealthBarController : MonoBehaviour
 {
-    public GameObject Host;
+    public GameObject MaskHolder;
 
-    public GameObject empty = new();
+    public int healthMain;
+    public int healthMax;
+    public int healthBlue;
 
-    public int health;
-
-    [CanBeNull] public HealthBarUI HealthBarUI;
-
-    public void Start()
-    {
-        if (HKMP_HealthDisplay.settings.isUIShown)
-        {
-            CreateHealthBar();
-        }
-    }
-    
     //to be called from outside
-    public void UpdateText(int newhealth)
+    public void UpdateText(int newHealthMain, int newHealthMax, int newHealthBlue)
     {
-        health = newhealth;
-        UpdateDisplayText();
+        healthMain = newHealthMain;
+        healthMax = newHealthMax;
+        healthBlue = newHealthBlue;
+        UpdateDisplay();
     }
 
-    private void UpdateDisplayText()
+    private void UpdateDisplay()
     {
         if (HKMP_HealthDisplay.settings.isUIShown)
         {
-            if (HealthBarUI == null)
+            if (MaskHolder == null)
             {
-                CreateHealthBar();
+                CreateHealthBarHolder();
             }
             
-            HealthBarUI!.SetMasks(health);
-        }
-        else
-        {
-            HealthBarUI?.Destroy();
-        }
-    }
+            int totalMasks = (healthMax + healthBlue);
+            int maxShownMasks = 15; //heart + 4 lifeblood
+            int maskToShow = Math.Min(totalMasks, maxShownMasks);
 
-    private void CreateHealthBar()
-    {
-        if (Host == null)
-        {
-            HealthBarUI?.Destroy();
+            float maskWidth = AssetLoader.Mask.bounds.size.x;
+            float maskSpacing = maskWidth / 2f;
+
+            float start = MaskHolder.transform.position.x - (maskToShow * maskSpacing) / 2f + maskSpacing;
+
+            for (int i = 0; i < maxShownMasks; i++)
+            {
+                SpriteRenderer spriteRenderer;
+                var maskGo = MaskHolder.Find($"Mask {i}");
+                if (maskGo == null)
+                {
+                    maskGo = new GameObject($"Mask {i}", typeof(KeepWorldScalePositive));
+                    spriteRenderer = maskGo.GetAddComponent<SpriteRenderer>();
+                    maskGo.transform.SetParent(MaskHolder.transform);
+                }
+                else
+                {
+                    spriteRenderer = maskGo.GetAddComponent<SpriteRenderer>();
+                }
+
+                maskGo.transform.position = new Vector3(start + i * maskSpacing, MaskHolder.transform.position.y, -2 - (totalMasks - i)/(float)totalMasks);
+
+                if (i < healthMain)
+                {
+                    spriteRenderer.sprite = AssetLoader.Mask;
+                    maskGo.SetActive(true);
+                }
+                else if (i < healthMax)
+                {
+                    spriteRenderer.sprite = AssetLoader.MaskEmpty;
+                    maskGo.SetActive(true);
+                }
+                else if (i < totalMasks)
+                {
+                    spriteRenderer.sprite = AssetLoader.MaskBlue;
+                    maskGo.SetActive(true);
+                }
+                else if (i < maxShownMasks)
+                {
+                    maskGo.SetActive(false);
+                }
+            }
+
+            if (totalMasks > maxShownMasks)
+            {
+                SpriteRenderer spriteRenderer;
+                var maskGo = MaskHolder.Find($"End Mask");
+                if (maskGo == null)
+                {
+                    maskGo = new GameObject($"End Mask", typeof(KeepWorldScalePositive));
+                    spriteRenderer = maskGo.GetAddComponent<SpriteRenderer>();
+                    maskGo.transform.SetParent(MaskHolder.transform);
+                }
+                else
+                {
+                    spriteRenderer = maskGo.GetAddComponent<SpriteRenderer>();
+                }
+
+                maskGo.transform.position = new Vector3(start + maxShownMasks * maskSpacing, MaskHolder.transform.position.y, -2 - (totalMasks - maxShownMasks)/(float)totalMasks);
+
+                spriteRenderer.sprite = AssetLoader.Plus;
+                maskGo.SetActive(true);
+            }
+            else
+            {
+                var maskGo = MaskHolder.Find($"End Mask");
+                if (maskGo != null)
+                {
+                    maskGo.SetActive(false);
+                }
+            }
         }
         else
         {
-            if (HealthBarUI == null)
+            if (MaskHolder != null)
             {
-                HealthBarUI = new HealthBarUI(HKMP_HealthDisplay.Instance.layout, Host, "Health bar maybe");
-                HKMP_HealthDisplay.Instance.gameObjectFollowingLayout.Children.Add(HealthBarUI);
+                Destroy(MaskHolder);
             }
         }
     }
-    public void OnDestroy()
+
+    private void CreateHealthBarHolder()
     {
-        //the other goes made here are children so they auto yeet themselves.
-        //but this isnt so we yeet manually
-        HealthBarUI?.Destroy();
+        var oldGo = gameObject.Find("MaskHolder");
+        if (oldGo != null) Destroy(oldGo);
+
+        MaskHolder = new GameObject("MaskHolder", typeof(KeepWorldScalePositive))
+        {
+            transform =
+            {
+                position = gameObject.transform.position + Vector3.up * 2f
+            }
+        };
+        MaskHolder.transform.SetParent(gameObject.transform);
+        MaskHolder.SetActive(true);
     }
 }

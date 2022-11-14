@@ -1,4 +1,6 @@
-﻿namespace HKMP_HealthDisplay.Settings;
+﻿using Object = UnityEngine.Object;
+
+namespace HKMP_HealthDisplay.Settings;
 
 public static class ModMenu
 {
@@ -19,7 +21,20 @@ public static class ModMenu
                         {
                             //destory all health bars and let the component deal with its consequences
                             if (component == null) continue;
-                            component.HealthBarUI?.Destroy();
+                            Object.Destroy(component);
+                        }
+                    }
+                    else
+                    {
+                        if (HkmpPouch.Client.Instance == null) return;
+                        if (!HkmpPouch.Client.Instance.clientApi.NetClient.IsConnected) return;
+
+                        foreach (var player in HkmpPouch.Client.Instance.clientApi.ClientManager.Players)
+                        {
+                            if (player is { IsInLocalScene: true })
+                            {
+                                HKMP_HealthDisplay.Instance.RequestUpdateFromPlayer(player);
+                            }
                         }
                     }
                 },

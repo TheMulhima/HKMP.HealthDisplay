@@ -20,8 +20,7 @@
 
     <!-- Same References -->
     <ItemGroup>
-        <EmbeddedResource Include="Images\Mask.png" />
-        <EmbeddedResource Include="Images\Vessel.png" />
+        <EmbeddedResource Include="Images\*.png"/>
         <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)/Assembly-CSharp.dll</HintPath>
         </Reference>
@@ -30,9 +29,6 @@
         </Reference>
         <Reference Include="HkmpPouch">
           <HintPath>$(HollowKnightFolder)/Mods/HkmpPouch/HkmpPouch.dll</HintPath>
-        </Reference>
-        <Reference Include="MagicUI">
-          <HintPath>$(HollowKnightFolder)/Mods/MagicUI/MagicUI.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_PlayMaker, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>$(HollowKnightFolder)/MMHOOK_PlayMaker.dll</HintPath>
@@ -111,7 +107,7 @@
     </ItemGroup>
 
     <Target Name="CopyMod" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb;$(TargetDir)$(TargetName).xml" DestinationFolder="$(OutputDirectory)" SkipUnchangedFiles="true" />
+        <Copy SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb;$(TargetDir)$(TargetName).xml" DestinationFolder="$(OutputDirectory)/$(TargetName)" SkipUnchangedFiles="true" />
     </Target>
 
     <Target Name="CreateReleaseZip" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
