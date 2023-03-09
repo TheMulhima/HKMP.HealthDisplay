@@ -4,6 +4,9 @@ using HkmpPouch;
 using JetBrains.Annotations;
 using HKMirror;
 using HKMirror.Hooks.OnHooks;
+using HkmpPouch;
+using HkmpPouch.Networking;
+using HkmpPouch.Packets;
 
 namespace HKMP_HealthDisplay;
 
@@ -12,8 +15,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 {
     internal static readonly Dictionary<IClientPlayer, HealthBarController> HealthBarComponentCache = new ();
     
-    private static HkmpPipe SendPipe;
-    private static HkmpPipe RequestPipe;
+    internal static PipeClient SendPipe;
+    private static PipeClient RequestPipe;
 
     //i hope no one names themselves like this 
     private const string Data_Seperator = "&*&*&()(())";
@@ -30,8 +33,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         Instance ??= this;
 
         //create 2 pipes for sending and requesting health
-        SendPipe = new HkmpPipe("HealthDisplaySendPipe", false);
-        RequestPipe = new HkmpPipe("HealthDisplayRequestPipe", false);
+        SendPipe = new PipeClient("HealthDisplaySendPipe");
+        RequestPipe = new PipeClient("HealthDisplayRequestPipe");
         
         SendPipe.OnRecieve += OnSendPipeReceive;
         RequestPipe.OnRecieve += OnRequestReceive;
@@ -58,10 +61,10 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private void RequestForData()
     {
-        if (Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
+        if (SendPipe?.ClientApi == null) return;
+        if (!SendPipe.ClientApi.NetClient.IsConnected) return;
 
-        foreach (var player in Client.Instance.clientApi.ClientManager.Players)
+        foreach (var player in SendPipe.ClientApi.ClientManager.Players)
         {
             if (player is { IsInLocalScene: true })
             {
@@ -87,28 +90,28 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
     private void AddPipeEvents(OnHeroController.Delegates.Params_Start args)
     {
-        Client.Instance.clientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
-        Client.Instance.clientApi.ClientManager.PlayerConnectEvent += RequestUpdateFromPlayer;
-        Client.Instance.clientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
+        SendPipe.ClientApi.ClientManager.PlayerEnterSceneEvent += RequestUpdateFromPlayer;
+        SendPipe.ClientApi.ClientManager.PlayerConnectEvent += RequestUpdateFromPlayer;
+        SendPipe.ClientApi.ClientManager.PlayerDisconnectEvent += RemovePlayerFromList;
 
         //unhook this. we only want it running once
         OnHeroController.BeforeOrig.Start -= AddPipeEvents;
     }
 
-    private void OnSendPipeReceive(object _, RecievedEventArgs R)
+    private void OnSendPipeReceive(object sender, ReceivedEventArgs R)
     {
-        var data = R.packet.eventData.Split(new[] { Data_Seperator }, StringSplitOptions.None);
+        var data = R.Data.EventData.Split(new[] { Data_Seperator }, StringSplitOptions.None);
         
         var senderUsername = data[0];
         var senderHealthMain = data[1];
         var senderHealthMax = data[2];
         var senderHealthBlue = data[3];
      
-        if(Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
+        if (SendPipe?.ClientApi == null) return;
+        if (!SendPipe.ClientApi.NetClient.IsConnected) return;
         
         //we are using username in this case because local player only has access to other players id and not his own
-        var player = Client.Instance.clientApi.ClientManager.Players.FirstOrDefault(player => player.Username == senderUsername);
+        var player = SendPipe.ClientApi.ClientManager.Players.FirstOrDefault(player => player.Username == senderUsername);
 
         if (player is { IsInLocalScene: true })
         {
@@ -126,10 +129,10 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         }
     }
     
-    private void OnRequestReceive(object _, RecievedEventArgs R)
+    private void OnRequestReceive(object _, ReceivedEventArgs R)
     {
-        if (Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
+        if (SendPipe?.ClientApi == null) return;
+        if (!SendPipe.ClientApi.NetClient.IsConnected) return;
 
         SendUpdateToAll(bypass:true);
     }
@@ -160,15 +163,15 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         var healthBlue = UpdatedPDName == nameof(PlayerDataAccess.healthBlue) ? newPDValue : PlayerDataAccess.healthBlue;
         var healthMax = UpdatedPDName == nameof(PlayerDataAccess.maxHealth) ? newPDValue : PlayerDataAccess.maxHealth;
         
-        return $"{Client.Instance.clientApi.ClientManager.Username}{Data_Seperator}{health}{Data_Seperator}{healthMax}{Data_Seperator}{healthBlue}";
+        return $"{SendPipe.ClientApi.ClientManager.Username}{Data_Seperator}{health}{Data_Seperator}{healthMax}{Data_Seperator}{healthBlue}";
     }
 
     private static string previousData = string.Empty;
     private void SendUpdateToAll(bool bypass = false) => SendUpdateToAll(string.Empty, 0, bypass);
     private void SendUpdateToAll(string name, int orig, bool bypass = false)
     {
-        if (Client.Instance == null) return;
-        if (!Client.Instance.clientApi.NetClient.IsConnected) return;
+        if (SendPipe?.ClientApi == null) return;
+        if (!SendPipe.ClientApi.NetClient.IsConnected) return;
         
         var data = GetEventData(name, orig);
 
@@ -182,12 +185,12 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
 
         previousData = data;
 
-        SendPipe.SendToAll(0, "normal send", data, true, true);
+        SendPipe.Broadcast("normal send", data, true, true);
     }
     
     public void RequestUpdateFromPlayer(IClientPlayer player)
     {
-        RequestPipe.Send(0, player.Id, "request", "");
+        RequestPipe.SendToPlayer(player.Id, "request", "");
     }
 
     private HealthBarController AddPlayerToCache(IClientPlayer player)

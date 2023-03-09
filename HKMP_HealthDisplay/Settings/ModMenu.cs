@@ -26,10 +26,10 @@ public static class ModMenu
                     }
                     else
                     {
-                        if (HkmpPouch.Client.Instance == null) return;
-                        if (!HkmpPouch.Client.Instance.clientApi.NetClient.IsConnected) return;
+                        if (HKMP_HealthDisplay.SendPipe?.ClientApi == null) return;
+                        if (!HKMP_HealthDisplay.SendPipe.ClientApi.NetClient.IsConnected) return;
 
-                        foreach (var player in HkmpPouch.Client.Instance.clientApi.ClientManager.Players)
+                        foreach (var player in HKMP_HealthDisplay.SendPipe.ClientApi.ClientManager.Players)
                         {
                             if (player is { IsInLocalScene: true })
                             {
