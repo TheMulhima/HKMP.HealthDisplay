@@ -45,6 +45,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
         //request for missing data
         ModHooks.HeroUpdateHook += RequestForData;
 
+        #if DEBUG
+        
         ModHooks.HeroUpdateHook += () =>
         {
             if (Input.GetKeyDown(KeyCode.Q))
@@ -53,6 +55,8 @@ public class HKMP_HealthDisplay:Mod, IGlobalSettings<GlobalSettings>, ICustomMen
                 c.UpdateText(PlayerDataAccess.health, PlayerDataAccess.maxHealth, PlayerDataAccess.healthBlue);
             }
         };
+        
+        #endif
         
         //send update when health changes
         ModHooks.SetPlayerIntHook += SendUpdateWhenPDChange;
